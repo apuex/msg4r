@@ -43,7 +43,7 @@ cmake_policy(SET CMP0057 NEW)
 cmake_policy(SET CMP0065 NEW)
 
 find_package(Threads REQUIRED)
-find_package(Boost 1.71.0 REQUIRED COMPONENTS date_time program_options log unit_test_framework)
+find_package(Boost 1.71.0 REQUIRED COMPONENTS date_time json program_options log unit_test_framework)
 if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
   link_directories(${Boost_LIBRARY_DIRS})
