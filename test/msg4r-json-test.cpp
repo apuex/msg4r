@@ -23,7 +23,7 @@ typedef struct my_struct {
 } my_struct_t;
 
 std::ostream& operator<<(std::ostream& os, const my_struct& t) {
-  os << "struct { i = " << t.i << "}";
+  os << "struct my_struct { i = " << t.i << " }";
   return os;
 }
 
@@ -55,6 +55,10 @@ BOOST_AUTO_TEST_CASE(first_test) {
   BOOST_TEST(s1 == s2);
   check(i);
   check(s1);
+  std::cout << boost::json::serialize(boost::json::value_from(s1));
+  boost::json::value jv = boost::json::parse("{\"i\":1}");
+  s2 = boost::json::value_to<my_struct_t>(jv);
+  BOOST_TEST(s1 == s2);
 }
 
 
