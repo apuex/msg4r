@@ -31,6 +31,9 @@
 *.out
 *.app
 
+# idea generated directories
+.idea
+
 # build directories
 dist
 vs
