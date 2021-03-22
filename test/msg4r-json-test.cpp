@@ -3,13 +3,19 @@
 
 #include <ostream>
 #include <boost/json/value_to.hpp>
+#include <boost/json/src.hpp>
 
 typedef struct my_struct {
   my_struct() : i() {}
   my_struct(int v) : i(v) {}
   my_struct(const my_struct& t) : i(t.i) {}
 
-  bool operator ==(const my_struct& t) const { 
+  my_struct& operator=(const my_struct& t) { 
+    this->i = t.i;
+    return *this;
+  }
+
+  bool operator==(const my_struct& t) const { 
     return (this->i == t.i);
   }
 
