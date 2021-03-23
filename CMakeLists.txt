@@ -66,11 +66,15 @@ SET(MSG4R_BINARY_TEST_SRCS
   test/msg4r-binary-test.cpp
 )
 
+SET(MSG4R_ENDIANNESS_TEST_SRCS
+  test/msg4r-endianness-test.cpp
+)
+
 SET(MSG4R_FAIL_TEST_SRCS
   test/msg4r-fail-test.cpp
 )
 
-ADD_LIBRARY(msg4r SHARED ${MSG4R_SRCS})
+ADD_LIBRARY(msg4r STATIC ${MSG4R_SRCS})
 target_compile_definitions(msg4r PUBLIC _MSG4R_)
 
 ADD_EXECUTABLE(msg4r-compiler-test ${MSG4R_COMPILER_TEST_SRCS})
@@ -93,9 +97,17 @@ if(UNIX)
 set_target_properties(msg4r-binary-test PROPERTIES LINK_FLAGS_RELEASE -s)
 endif()
 
+ADD_EXECUTABLE(msg4r-endianness-test ${MSG4R_ENDIANNESS_TEST_SRCS})
+target_include_directories(msg4r-endianness-test PRIVATE ${Boost_INCLUDE_DIRS})
+target_link_libraries(msg4r-endianness-test ${Boost_LIBRARIES} ${Boost_unit_test_framework})
+if(UNIX)
+set_target_properties(msg4r-endianness-test PROPERTIES LINK_FLAGS_RELEASE -s)
+endif()
+
 ADD_TEST(NAME msg4r-compiler-test COMMAND msg4r-compiler-test)
 ADD_TEST(NAME msg4r-json-test COMMAND msg4r-json-test)
 ADD_TEST(NAME msg4r-binary-test COMMAND msg4r-binary-test)
+ADD_TEST(NAME msg4r-endianness-test COMMAND msg4r-endianness-test)
 
 set_target_properties(msg4r PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
 
