@@ -58,8 +58,8 @@ BOOST_AUTO_TEST_CASE(first_test) {
   my_struct_t s2{i,m};
   printf("native 0x%08x to little equals 0x%08x\n", i, boost::endian::native_to_little(i));
   printf("native 0x%08x to big    equals 0x%08x\n", i, boost::endian::native_to_big(i));
-  printf("native 0x%016lx to little equals 0x%016lx\n", u, boost::endian::native_to_little(u));
-  printf("native 0x%016lx to big    equals 0x%016lx\n", u, boost::endian::native_to_big(u));
+  printf("native 0x%016zx to little equals 0x%016zx\n", u, boost::endian::native_to_little(u));
+  printf("native 0x%016zx to big    equals 0x%016zx\n", u, boost::endian::native_to_big(u));
   f = 1.0f; 
   printf("native %f to little equals %f\n", (float)f, f.value());
   f += 1.0f; 
