@@ -80,6 +80,7 @@ target_include_directories(msg4r-json-test PRIVATE ${Boost_INCLUDE_DIRS})
 target_link_libraries(msg4r-json-test ${Boost_unit_test_framework})
 
 ADD_EXECUTABLE(msg4r-binary-test ${MSG4R_BINARY_TEST_SRCS})
+#target_compile_definitions(msg4r-binary-test PUBLIC BOOST_NO_MEMBER_TEMPLATE_FRIENDS)
 target_include_directories(msg4r-binary-test PRIVATE ${Boost_INCLUDE_DIRS})
 target_link_libraries(msg4r-binary-test ${Boost_unit_test_framework})
 
