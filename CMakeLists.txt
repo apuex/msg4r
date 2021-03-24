@@ -74,6 +74,10 @@ SET(MSG4R_INT_TEST_SRCS
   test/msg4r-int-test.cpp
 )
 
+SET(MSG4R_STRING_TEST_SRCS
+  test/msg4r-string-test.cpp
+)
+
 SET(MSG4R_FAIL_TEST_SRCS
   test/msg4r-fail-test.cpp
 )
@@ -114,6 +118,14 @@ target_link_libraries(msg4r-int-test ${Boost_LIBRARIES} ${Boost_unit_test_framew
 if(UNIX)
 set_target_properties(msg4r-int-test PROPERTIES LINK_FLAGS_RELEASE -s)
 endif()
+
+ADD_EXECUTABLE(msg4r-string-test ${MSG4R_STRING_TEST_SRCS})
+target_include_directories(msg4r-string-test PRIVATE ${Boost_INCLUDE_DIRS})
+target_link_libraries(msg4r-string-test msg4r ${Boost_LIBRARIES} ${Boost_unit_test_framework})
+if(UNIX)
+set_target_properties(msg4r-string-test PROPERTIES LINK_FLAGS_RELEASE -s)
+endif()
+ADD_TEST(NAME msg4r-string-test COMMAND msg4r-string-test)
 
 ADD_TEST(NAME msg4r-compiler-test COMMAND msg4r-compiler-test)
 ADD_TEST(NAME msg4r-json-test COMMAND msg4r-json-test)

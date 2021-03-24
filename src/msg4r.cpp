@@ -5,11 +5,11 @@ namespace msg4r {
 std::istream& read(std::istream& is, std::string& v) {
   uint32_t length;
   read(is, length);
-  std::for_each(v.begin(), v.end(), [&](auto& e) {
-      uint8_t c;
-      read(is, c);
-      v.push_back(c);
-    });
+  for(uint32_t i = 0; i != length; ++i) {
+    uint8_t c;
+    read(is, c);
+    v.push_back(c);
+  }
   return is;
 }
 
