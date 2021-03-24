@@ -50,8 +50,11 @@ BOOST_AUTO_TEST_CASE(uint16_test) {
     std::cout << std::endl;
   msg4r::read(ssm, s2);
   std::for_each(s2.begin(), s2.end(), [&](auto& e) {
-      std::cout << std::hex << std::uppercase << std::setw(8) << std::setfill('0')
-          << "(" << e.first << ", " << e.second << ")" << std::endl;
+      std::cout << "("
+          << std::hex << std::uppercase << std::setw(4) << std::setfill('0') << e.first
+          << ", "
+          << std::hex << std::uppercase << std::setw(4) << std::setfill('0') << e.second
+          << ")" << std::endl;
     });
   BOOST_TEST(s1 == s2);
   s1 = { { 0xdead, 0xface } };
@@ -66,8 +69,11 @@ BOOST_AUTO_TEST_CASE(uint16_test) {
     std::cout << std::endl;
   msg4r::read(ssm, s2);
   std::for_each(s2.begin(), s2.end(), [&](auto& e) {
-      std::cout << std::hex << std::uppercase << std::setw(8) << std::setfill('0')
-          << "(" << e.first << ", " << e.second << ")" << std::endl;
+      std::cout << "("
+          << std::hex << std::uppercase << std::setw(4) << std::setfill('0') << e.first
+          << ", "
+          << std::hex << std::uppercase << std::setw(4) << std::setfill('0') << e.second
+          << ")" << std::endl;
     });
   BOOST_TEST(s1 == s2);
 }
@@ -85,8 +91,11 @@ BOOST_AUTO_TEST_CASE(uint32_test) {
     std::cout << std::endl;
   msg4r::read(ssm, s2);
   std::for_each(s2.begin(), s2.end(), [&](auto& e) {
-      std::cout << std::hex << std::uppercase << std::setw(8) << std::setfill('0')
-          << "(" << e.first << ", " << e.second << ")" << std::endl;
+      std::cout << "("
+          << std::hex << std::uppercase << std::setw(8) << std::setfill('0') << e.first
+          << ", "
+          << std::hex << std::uppercase << std::setw(8) << std::setfill('0') << e.second
+          << ")" << std::endl;
     });
   BOOST_TEST(s1 == s2);
   s1 = { { 0xdead, 0xface } };
@@ -101,8 +110,11 @@ BOOST_AUTO_TEST_CASE(uint32_test) {
     std::cout << std::endl;
   msg4r::read(ssm, s2);
   std::for_each(s2.begin(), s2.end(), [&](auto& e) {
-      std::cout << std::hex << std::uppercase << std::setw(8) << std::setfill('0')
-          << "(" << e.first << ", " << e.second << ")" << std::endl;
+      std::cout << "("
+          << std::hex << std::uppercase << std::setw(8) << std::setfill('0') << e.first
+          << ", "
+          << std::hex << std::uppercase << std::setw(8) << std::setfill('0') << e.second
+          << ")" << std::endl;
     });
   BOOST_TEST(s1 == s2);
 }
