@@ -1,12 +1,14 @@
 #pragma once
 
 #include <cstdint>
+#include <algorithm>
 #include <iostream>
 #include <string>
 #include <list>
 #include <set>
 #include <map>
 #include <vector>
+#include <boost/endian/conversion.hpp>
 
 namespace msg4r {
 
@@ -38,6 +40,13 @@ std::ostream& write(std::ostream& os, const T& v) {
 
 template<typename T>
 std::istream& read(std::istream& is, std::vector<T>& v) {
+  uint32_t length;
+  read(is, length);
+  std::for_each(v.begin(), v.end(), [&](auto& e) {
+      T c;
+      read(is, c);
+      v.push_back(c);
+    });
   return is;
 }
 
@@ -53,6 +62,13 @@ std::ostream& write(std::ostream& os, const std::vector<T>& v) {
 
 template<typename T>
 std::istream& read(std::istream& is, std::list<T>& v) {
+  uint32_t length;
+  read(is, length);
+  std::for_each(v.begin(), v.end(), [&](auto& e) {
+      T c;
+      read(is, c);
+      v.push_back(c);
+    });
   return is;
 }
 
@@ -68,11 +84,27 @@ std::ostream& write(std::ostream& os, const std::list<T>& v) {
 
 template<typename T>
 std::istream& read(std::istream& is, std::set<T>& v) {
+  uint32_t length;
+  read(is, length);
+  std::for_each(v.begin(), v.end(), [&](auto& e) {
+      T c;
+      read(is, c);
+      v.push_back(c);
+    });
   return is;
 }
 
 template<typename K, typename V>
 std::istream& read(std::istream& is, std::map<K, V>& v) {
+  uint32_t length;
+  read(is, length);
+  std::for_each(v.begin(), v.end(), [&](auto& e) {
+      K k;
+      V v;
+      read(is, k);
+      read(is, v);
+      v.insert(std::make_pair(k, v));
+    });
   return is;
 }
 

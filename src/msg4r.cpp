@@ -1,10 +1,15 @@
 #include <msg4r.h>
-#include <algorithm>
-#include <boost/endian/conversion.hpp>
 
 namespace msg4r {
 
 std::istream& read(std::istream& is, std::string& v) {
+  uint32_t length;
+  read(is, length);
+  std::for_each(v.begin(), v.end(), [&](auto& e) {
+      uint8_t c;
+      read(is, c);
+      v.push_back(c);
+    });
   return is;
 }
 
