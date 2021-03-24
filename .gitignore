@@ -37,3 +37,6 @@
 # build directories
 dist
 vs
+/build/
+.project
+.cproject
