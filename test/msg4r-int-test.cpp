@@ -12,6 +12,7 @@ BOOST_AUTO_TEST_CASE(uint8_t_test) {
   msg4r::read(ssm, s2);
   BOOST_TEST(s1 == s2);
   s1 = 0xfe;
+  ssm.str("");
   msg4r::write(ssm, s1);
   msg4r::read(ssm, s2);
   BOOST_TEST(s1 == s2);
@@ -25,6 +26,7 @@ BOOST_AUTO_TEST_CASE(uint16_t_test) {
   msg4r::read(ssm, s2);
   BOOST_TEST(s1 == s2);
   s1 = 0xcafe;
+  ssm.str("");
   msg4r::write(ssm, s1);
   msg4r::read(ssm, s2);
   BOOST_TEST(s1 == s2);
@@ -38,6 +40,7 @@ BOOST_AUTO_TEST_CASE(uint32_t_test) {
   msg4r::read(ssm, s2);
   BOOST_TEST(s1 == s2);
   s1 = 0xcafe;
+  ssm.str("");
   msg4r::write(ssm, s1);
   msg4r::read(ssm, s2);
   BOOST_TEST(s1 == s2);
@@ -51,6 +54,7 @@ BOOST_AUTO_TEST_CASE(uint64_t_test) {
   msg4r::read(ssm, s2);
   BOOST_TEST(s1 == s2);
   s1 = 0xcafe;
+  ssm.str("");
   msg4r::write(ssm, s1);
   msg4r::read(ssm, s2);
   BOOST_TEST(s1 == s2);
@@ -64,6 +68,7 @@ BOOST_AUTO_TEST_CASE(int8_t_test) {
   msg4r::read(ssm, s2);
   BOOST_TEST(s1 == s2);
   s1 = 0xfe;
+  ssm.str("");
   msg4r::write(ssm, s1);
   msg4r::read(ssm, s2);
   BOOST_TEST(s1 == s2);
@@ -77,6 +82,7 @@ BOOST_AUTO_TEST_CASE(int16_t_test) {
   msg4r::read(ssm, s2);
   BOOST_TEST(s1 == s2);
   s1 = 0xcafe;
+  ssm.str("");
   msg4r::write(ssm, s1);
   msg4r::read(ssm, s2);
   BOOST_TEST(s1 == s2);
@@ -90,6 +96,7 @@ BOOST_AUTO_TEST_CASE(int32_t_test) {
   msg4r::read(ssm, s2);
   BOOST_TEST(s1 == s2);
   s1 = 0xcafe;
+  ssm.str("");
   msg4r::write(ssm, s1);
   msg4r::read(ssm, s2);
   BOOST_TEST(s1 == s2);
@@ -103,6 +110,7 @@ BOOST_AUTO_TEST_CASE(int64_t_test) {
   msg4r::read(ssm, s2);
   BOOST_TEST(s1 == s2);
   s1 = 0xcafe;
+  ssm.str("");
   msg4r::write(ssm, s1);
   msg4r::read(ssm, s2);
   BOOST_TEST(s1 == s2);

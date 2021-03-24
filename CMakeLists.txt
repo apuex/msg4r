@@ -78,8 +78,20 @@ SET(MSG4R_LIST_TEST_SRCS
   test/msg4r-list-test.cpp
 )
 
+SET(MSG4R_MAP_TEST_SRCS
+  test/msg4r-map-test.cpp
+)
+
+SET(MSG4R_SET_TEST_SRCS
+  test/msg4r-set-test.cpp
+)
+
 SET(MSG4R_STRING_TEST_SRCS
   test/msg4r-string-test.cpp
+)
+
+SET(MSG4R_VECTOR_TEST_SRCS
+  test/msg4r-vector-test.cpp
 )
 
 SET(MSG4R_FAIL_TEST_SRCS
@@ -132,6 +144,22 @@ set_target_properties(msg4r-list-test PROPERTIES LINK_FLAGS_RELEASE -s)
 endif()
 ADD_TEST(NAME msg4r-list-test COMMAND msg4r-list-test)
 
+ADD_EXECUTABLE(msg4r-map-test ${MSG4R_MAP_TEST_SRCS})
+target_include_directories(msg4r-map-test PRIVATE ${Boost_INCLUDE_DIRS})
+target_link_libraries(msg4r-map-test msg4r ${Boost_LIBRARIES} ${Boost_unit_test_framework})
+if(UNIX)
+set_target_properties(msg4r-map-test PROPERTIES LINK_FLAGS_RELEASE -s)
+endif()
+ADD_TEST(NAME msg4r-map-test COMMAND msg4r-map-test)
+
+ADD_EXECUTABLE(msg4r-set-test ${MSG4R_SET_TEST_SRCS})
+target_include_directories(msg4r-set-test PRIVATE ${Boost_INCLUDE_DIRS})
+target_link_libraries(msg4r-set-test msg4r ${Boost_LIBRARIES} ${Boost_unit_test_framework})
+if(UNIX)
+set_target_properties(msg4r-set-test PROPERTIES LINK_FLAGS_RELEASE -s)
+endif()
+ADD_TEST(NAME msg4r-set-test COMMAND msg4r-set-test)
+
 ADD_EXECUTABLE(msg4r-string-test ${MSG4R_STRING_TEST_SRCS})
 target_include_directories(msg4r-string-test PRIVATE ${Boost_INCLUDE_DIRS})
 target_link_libraries(msg4r-string-test msg4r ${Boost_LIBRARIES} ${Boost_unit_test_framework})
@@ -139,6 +167,14 @@ if(UNIX)
 set_target_properties(msg4r-string-test PROPERTIES LINK_FLAGS_RELEASE -s)
 endif()
 ADD_TEST(NAME msg4r-string-test COMMAND msg4r-string-test)
+
+ADD_EXECUTABLE(msg4r-vector-test ${MSG4R_VECTOR_TEST_SRCS})
+target_include_directories(msg4r-vector-test PRIVATE ${Boost_INCLUDE_DIRS})
+target_link_libraries(msg4r-vector-test msg4r ${Boost_LIBRARIES} ${Boost_unit_test_framework})
+if(UNIX)
+set_target_properties(msg4r-vector-test PROPERTIES LINK_FLAGS_RELEASE -s)
+endif()
+ADD_TEST(NAME msg4r-vector-test COMMAND msg4r-vector-test)
 
 ADD_TEST(NAME msg4r-compiler-test COMMAND msg4r-compiler-test)
 ADD_TEST(NAME msg4r-json-test COMMAND msg4r-json-test)
