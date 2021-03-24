@@ -42,11 +42,11 @@ template<typename T>
 std::istream& read(std::istream& is, std::vector<T>& v) {
   uint32_t length;
   read(is, length);
-  std::for_each(v.begin(), v.end(), [&](auto& e) {
-      T c;
-      read(is, c);
-      v.push_back(c);
-    });
+  for(uint32_t i = 0; i != length; ++i) {
+    T c;
+    read(is, c);
+    v.push_back(c);
+  }
   return is;
 }
 
@@ -54,7 +54,7 @@ template<typename T>
 std::ostream& write(std::ostream& os, const std::vector<T>& v) {
   uint32_t length = static_cast<uint32_t>(v.length());
   write(os, length);
-  std::for_each(v.begin(), v.end(), [&](auto e) {
+  std::for_each(v.begin(), v.end(), [&](auto& e) {
       write(os, e);
     });
   return os;
@@ -64,19 +64,19 @@ template<typename T>
 std::istream& read(std::istream& is, std::list<T>& v) {
   uint32_t length;
   read(is, length);
-  std::for_each(v.begin(), v.end(), [&](auto& e) {
-      T c;
-      read(is, c);
-      v.push_back(c);
-    });
+  for(uint32_t i = 0; i != length; ++i) {
+    T c;
+    read(is, c);
+    v.push_back(c);
+  }
   return is;
 }
 
 template<typename T>
 std::ostream& write(std::ostream& os, const std::list<T>& v) {
-  uint32_t length = static_cast<uint32_t>(v.length());
+  uint32_t length = static_cast<uint32_t>(v.size());
   write(os, length);
-  std::for_each(v.begin(), v.end(), [&](auto e) {
+  std::for_each(v.begin(), v.end(), [&](auto& e) {
       write(os, e);
     });
   return os;
@@ -86,11 +86,11 @@ template<typename T>
 std::istream& read(std::istream& is, std::set<T>& v) {
   uint32_t length;
   read(is, length);
-  std::for_each(v.begin(), v.end(), [&](auto& e) {
-      T c;
-      read(is, c);
-      v.push_back(c);
-    });
+  for(uint32_t i = 0; i != length; ++i) {
+    T c;
+    read(is, c);
+    v.insert(c);
+  }
   return is;
 }
 
@@ -98,19 +98,19 @@ template<typename K, typename V>
 std::istream& read(std::istream& is, std::map<K, V>& v) {
   uint32_t length;
   read(is, length);
-  std::for_each(v.begin(), v.end(), [&](auto& e) {
-      K k;
-      V v;
-      read(is, k);
-      read(is, v);
-      v.insert(std::make_pair(k, v));
-    });
+  for(uint32_t i = 0; i != length; ++i) {
+    K k;
+    V v;
+    read(is, k);
+    read(is, v);
+    v.insert(std::make_pair(k, v));
+  }
   return is;
 }
 
 template<typename K, typename V>
 std::ostream& write(std::ostream& os, const std::map<K, V>& v) {
-  uint32_t length = static_cast<uint32_t>(v.length());
+  uint32_t length = static_cast<uint32_t>(v.size());
   write(os, length);
   std::for_each(v.begin(), v.end(), [&](auto& e) {
       write(os, e.first);

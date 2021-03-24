@@ -74,6 +74,10 @@ SET(MSG4R_INT_TEST_SRCS
   test/msg4r-int-test.cpp
 )
 
+SET(MSG4R_LIST_TEST_SRCS
+  test/msg4r-list-test.cpp
+)
+
 SET(MSG4R_STRING_TEST_SRCS
   test/msg4r-string-test.cpp
 )
@@ -118,6 +122,15 @@ target_link_libraries(msg4r-int-test ${Boost_LIBRARIES} ${Boost_unit_test_framew
 if(UNIX)
 set_target_properties(msg4r-int-test PROPERTIES LINK_FLAGS_RELEASE -s)
 endif()
+ADD_TEST(NAME msg4r-int-test COMMAND msg4r-int-test)
+
+ADD_EXECUTABLE(msg4r-list-test ${MSG4R_LIST_TEST_SRCS})
+target_include_directories(msg4r-list-test PRIVATE ${Boost_INCLUDE_DIRS})
+target_link_libraries(msg4r-list-test msg4r ${Boost_LIBRARIES} ${Boost_unit_test_framework})
+if(UNIX)
+set_target_properties(msg4r-list-test PROPERTIES LINK_FLAGS_RELEASE -s)
+endif()
+ADD_TEST(NAME msg4r-list-test COMMAND msg4r-list-test)
 
 ADD_EXECUTABLE(msg4r-string-test ${MSG4R_STRING_TEST_SRCS})
 target_include_directories(msg4r-string-test PRIVATE ${Boost_INCLUDE_DIRS})
@@ -131,7 +144,6 @@ ADD_TEST(NAME msg4r-compiler-test COMMAND msg4r-compiler-test)
 ADD_TEST(NAME msg4r-json-test COMMAND msg4r-json-test)
 ADD_TEST(NAME msg4r-binary-test COMMAND msg4r-binary-test)
 ADD_TEST(NAME msg4r-endianness-test COMMAND msg4r-endianness-test)
-ADD_TEST(NAME msg4r-int-test COMMAND msg4r-int-test)
 
 set_target_properties(msg4r PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
 
