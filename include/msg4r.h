@@ -8,6 +8,7 @@
 #include <set>
 #include <map>
 #include <vector>
+#include <boost/endian/arithmetic.hpp>
 #include <boost/endian/conversion.hpp>
 
 namespace msg4r {
@@ -15,9 +16,13 @@ namespace msg4r {
 #ifdef MSG4R_BIG_ENDIAN
 #define from_native boost::endian::native_to_big
 #define to_native boost::endian::big_to_native
+#define float32_t boost::endian::big_float32_t
+#define float64_t boost::endian::big_float64_t
 #else
 #define from_native boost::endian::native_to_little
 #define to_native boost::endian::little_to_native
+#define float32_t boost::endian::little_float32_t
+#define float64_t boost::endian::little_float64_t
 #endif
 
 std::istream& read(std::istream& is, std::string& v);

@@ -92,6 +92,10 @@ SET(MSG4R_STRING_TEST_SRCS
   test/msg4r-string-test.cpp
 )
 
+SET(MSG4R_STRUCT1_TEST_SRCS
+  test/msg4r-struct1-test.cpp
+)
+
 SET(MSG4R_VECTOR_TEST_SRCS
   test/msg4r-vector-test.cpp
 )
@@ -169,6 +173,14 @@ if(UNIX)
 set_target_properties(msg4r-string-test PROPERTIES LINK_FLAGS_RELEASE -s)
 endif()
 ADD_TEST(NAME msg4r-string-test COMMAND msg4r-string-test)
+
+ADD_EXECUTABLE(msg4r-struct1-test ${MSG4R_STRUCT1_TEST_SRCS})
+target_include_directories(msg4r-struct1-test PRIVATE ${Boost_INCLUDE_DIRS})
+target_link_libraries(msg4r-struct1-test msg4r ${Boost_LIBRARIES} ${Boost_unit_test_framework})
+if(UNIX)
+set_target_properties(msg4r-struct1-test PROPERTIES LINK_FLAGS_RELEASE -s)
+endif()
+ADD_TEST(NAME msg4r-struct1-test COMMAND msg4r-struct1-test)
 
 ADD_EXECUTABLE(msg4r-vector-test ${MSG4R_VECTOR_TEST_SRCS})
 target_include_directories(msg4r-vector-test PRIVATE ${Boost_INCLUDE_DIRS})
