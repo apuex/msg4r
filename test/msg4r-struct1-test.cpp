@@ -5,6 +5,7 @@
 #include <sstream>
 
 namespace msg4r {
+
 typedef struct struct1 {
   uint16_t version;
   uint16_t class_type;
@@ -14,18 +15,33 @@ typedef struct struct1 {
   uint16_t state;
   float64_t analog;
   std::string str;
-  bool operator==(const struct1& v) const {
-    if(this->version != v.version) return false;
-    if(this->class_type != v.class_type) return false;
-    if(this->id != v.id) return false;
-    if(this->value_type != v.value_type) return false;
-    if(this->name != v.name) return false;
-    if(this->state != v.state) return false;
-    if(this->analog != v.analog) return false;
-    if(this->str != v.str) return false;
-    return true;
-  }
+  std::map<std::string, std::string> props;
 } struct1_t;
+
+// for equals tests in testcases.
+bool operator==(const struct1& lhs, const struct1& v) {
+  return std::tie( lhs.version
+                 , lhs.class_type
+                 , lhs.id
+                 , lhs.value_type
+                 , lhs.name
+                 , lhs.state
+                 , lhs.analog
+                 , lhs.str
+                 , lhs.props
+                 )
+                 == 
+         std::tie( v.version
+                 , v.class_type
+                 , v.id
+                 , v.value_type
+                 , v.name
+                 , v.state
+                 , v.analog
+                 , v.str
+                 , v.props
+                 );
+}
 
 std::istream& read(std::istream& is, struct1_t& v) {
   msg4r::read(is, v.version);
@@ -36,6 +52,7 @@ std::istream& read(std::istream& is, struct1_t& v) {
   msg4r::read(is, v.state);
   msg4r::read(is, v.analog);
   msg4r::read(is, v.str);
+  msg4r::read(is, v.props);
   return is;
 }
 
@@ -48,6 +65,17 @@ std::ostream& write(std::ostream& os, const struct1_t& v) {
   msg4r::write(os, v.state);
   msg4r::write(os, v.analog);
   msg4r::write(os, v.str);
+  msg4r::write(os, v.props);
+  return os;
+}
+
+std::ostream& operator<<(std::ostream& os,
+                         const std::map<std::string, std::string>& t) {
+  os << "{ ";
+  std::for_each(t.begin(), t.end(), [&](auto& e) { 
+    os << e.first << ": " << e.second << "; ";
+    });
+  os << "}";
   return os;
 }
 
@@ -60,7 +88,8 @@ std::ostream& operator<<(std::ostream& os, const msg4r::struct1& v) {
      << " name: \"" << v.name << "\","
      << " state: " << v.state << ","
      << " analog: " << v.analog << ","
-     << " str: \"" << v.str << "\""
+     << " str: \"" << v.str << "\","
+     << " props: " << v.props << ""
      << " }";
   return os;
 }
@@ -73,10 +102,11 @@ BOOST_AUTO_TEST_CASE(struct1_test) {
     0xbeef,
     0x00000001,
     0x0001,
-    "cpu.temp",
+    "Donald J. Trump",
     0x01,
     35.6,
-    "Fuck Trump. If you like Trump, Fuck you too."
+    "川建国",
+    { {"mother", "fucker"}, { "dead", "face" } }
   };
   msg4r::struct1_t s2;
   std::stringstream ssm;

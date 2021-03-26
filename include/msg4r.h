@@ -3,10 +3,11 @@
 #include <cstdint>
 #include <algorithm>
 #include <iostream>
-#include <string>
 #include <list>
-#include <set>
 #include <map>
+#include <set>
+#include <string>
+#include <tuple>
 #include <vector>
 #include <boost/endian/arithmetic.hpp>
 #include <boost/endian/conversion.hpp>
@@ -29,7 +30,7 @@ std::istream& read(std::istream& is, std::string& v);
 std::ostream& write(std::ostream& os, const std::string& v);
 
 /**
- * read integers. T = { int8_t, ... }
+ * read integers and floating-point numbers. T = { int8_t, ... }
  */
 template<typename T>
 std::istream& read(std::istream& is, T& v) {
@@ -40,7 +41,7 @@ std::istream& read(std::istream& is, T& v) {
 }
 
 /**
- * write integers. T = { int8_t, ... }
+ * write integers and floating-point numbers. T = { int8_t, ... }
  */
 template<typename T>
 std::ostream& write(std::ostream& os, const T& v) {
