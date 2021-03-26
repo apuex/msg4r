@@ -8,7 +8,7 @@ namespace msg4r {
 
 //#pragma pack(push, r1, 1)
 //typedef struct __attribute__((packed)) switch_states {
-typedef MSG4R_PACKED(2) struct switch_states {
+typedef struct MSG4R_PACKED(2) switch_states {
   uint16_t SW0:1;
   uint16_t SW1:1;
   uint16_t SW2:1;
