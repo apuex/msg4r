@@ -26,6 +26,12 @@ namespace msg4r {
 #define float64_t boost::endian::little_float64_t
 #endif
 
+#ifdef _MSC_VER
+#define MSG4R_PACKED(n) _declspec(align((n)))
+#else
+#define MSG4R_PACKED(n) __attribute__((packed))
+#endif
+
 std::istream& read(std::istream& is, std::string& v);
 std::ostream& write(std::ostream& os, const std::string& v);
 

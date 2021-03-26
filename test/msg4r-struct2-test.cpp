@@ -6,27 +6,27 @@
 
 namespace msg4r {
 
-#pragma pack(push, r1, 1)
+//#pragma pack(push, r1, 1)
 //typedef struct __attribute__((packed)) switch_states {
-typedef struct switch_states {
-  uint32_t SW0:1;
-  uint32_t SW1:1;
-  uint32_t SW2:1;
-  uint32_t SW3:1;
-  uint32_t SW4:1;
-  uint32_t SW5:1;
-  uint32_t SW6:1;
-  uint32_t SW7:1;
-  uint32_t SW8:1;
-  uint32_t SW9:1;
-  uint32_t SW10:1;
-  uint32_t SW11:1;
-  uint32_t SW12:1;
-  uint32_t SW13:1;
-  uint32_t SW14:1;
-  uint32_t SW15:1;
+typedef MSG4R_PACKED(2) struct switch_states {
+  uint16_t SW0:1;
+  uint16_t SW1:1;
+  uint16_t SW2:1;
+  uint16_t SW3:1;
+  uint16_t SW4:1;
+  uint16_t SW5:1;
+  uint16_t SW6:1;
+  uint16_t SW7:1;
+  uint16_t SW8:1;
+  uint16_t SW9:1;
+  uint16_t SW10:1;
+  uint16_t SW11:1;
+  uint16_t SW12:1;
+  uint16_t SW13:1;
+  uint16_t SW14:1;
+  uint16_t SW15:1;
 } switch_states_t;
-#pragma pack(pop, r1)
+//#pragma pack(pop, r1)
 
 // for equals tests in testcases.
 bool operator==(const switch_states& lhs, const switch_states& rhs) {
