@@ -6,7 +6,7 @@
 
 namespace msg4r {
 
-#pragma pack(push, 1)
+#pragma pack(push, r1, 1)
 //typedef struct __attribute__((packed)) switch_states {
 typedef struct switch_states {
   uint32_t SW0:1;
@@ -26,7 +26,7 @@ typedef struct switch_states {
   uint32_t SW14:1;
   uint32_t SW15:1;
 } switch_states_t;
-#pragma pack(pop)
+#pragma pack(pop, r1)
 
 // for equals tests in testcases.
 bool operator==(const switch_states& lhs, const switch_states& rhs) {
