@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE(struct1_test) {
     "Donald J. Trump",
     0x01,
     35.6,
-    "川建国",
+    "president",
     { {"mother", "fucker"}, { "dead", "face" } }
   };
   msg4r::struct1_t s2;
