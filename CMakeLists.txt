@@ -60,6 +60,10 @@ SET(MSG4R_COMPILER_TEST_SRCS
   test/msg4r-compiler-test.cpp
 )
 
+SET(MSG4R_ISTREAM_TEST_SRCS
+  test/msg4r-istream-test.cpp
+)
+
 SET(MSG4R_JSON_TEST_SRCS
   test/msg4r-json-test.cpp
 )
@@ -114,6 +118,13 @@ target_compile_definitions(msg4r PUBLIC _MSG4R_)
 ADD_EXECUTABLE(msg4r-compiler-test ${MSG4R_COMPILER_TEST_SRCS})
 if(UNIX)
 set_target_properties(msg4r-compiler-test PROPERTIES LINK_FLAGS_RELEASE -s)
+endif()
+
+ADD_EXECUTABLE(msg4r-istream-test ${MSG4R_ISTREAM_TEST_SRCS})
+target_include_directories(msg4r-istream-test PRIVATE ${Boost_INCLUDE_DIRS})
+target_link_libraries(msg4r-istream-test msg4r ${Boost_LIBRARIES} ${Boost_unit_test_framework})
+if(UNIX)
+set_target_properties(msg4r-istream-test PROPERTIES LINK_FLAGS_RELEASE -s)
 endif()
 
 ADD_EXECUTABLE(msg4r-json-test ${MSG4R_JSON_TEST_SRCS})
@@ -203,6 +214,7 @@ endif()
 ADD_TEST(NAME msg4r-vector-test COMMAND msg4r-vector-test)
 
 ADD_TEST(NAME msg4r-compiler-test COMMAND msg4r-compiler-test)
+ADD_TEST(NAME msg4r-istream-test COMMAND msg4r-istream-test)
 ADD_TEST(NAME msg4r-json-test COMMAND msg4r-json-test)
 ADD_TEST(NAME msg4r-binary-test COMMAND msg4r-binary-test)
 ADD_TEST(NAME msg4r-endianness-test COMMAND msg4r-endianness-test)
