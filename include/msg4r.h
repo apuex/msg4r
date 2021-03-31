@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <algorithm>
+#include <iomanip>
 #include <iostream>
 #include <list>
 #include <map>
@@ -32,32 +33,44 @@ namespace msg4r {
 #define MSG4R_PACKED(n) __attribute__((packed))
 #endif
 
-std::istream& read(std::istream& is, std::string& v);
-std::ostream& write(std::ostream& os, const std::string& v);
+enum encode_state {
+  ENCODE_SUCCESS   = 0,
+  ENCODE_WAITING = 1,
+  ENCODE_FAILURE   = 2
+};
+
+enum decode_state {
+  DECODE_SUCCESS   = 0,
+  DECODE_EXPECTING = 1,
+  DECODE_FAILURE   = 2
+};
+
+decode_state read(std::istream& is, std::string& v);
+encode_state write(std::ostream& os, const std::string& v);
 
 /**
  * read integers and floating-point numbers. T = { int8_t, ... }
  */
 template<typename T>
-std::istream& read(std::istream& is, T& v) {
+decode_state read(std::istream& is, T& v) {
   T t;
   is.read((char*)&t, sizeof(t));
   v = to_native(t);
-  return is;
+  return DECODE_SUCCESS;
 }
 
 /**
  * write integers and floating-point numbers. T = { int8_t, ... }
  */
 template<typename T>
-std::ostream& write(std::ostream& os, const T& v) {
+encode_state write(std::ostream& os, const T& v) {
   T t = from_native(v);
   os.write((char*)&t, sizeof(t));
-  return os;
+  return ENCODE_SUCCESS;
 }
 
 template<typename T>
-std::istream& read(std::istream& is, std::vector<T>& v) {
+decode_state read(std::istream& is, std::vector<T>& v) {
   uint32_t length;
   read(is, length);
   for(uint32_t i = 0; i != length; ++i) {
@@ -65,21 +78,21 @@ std::istream& read(std::istream& is, std::vector<T>& v) {
     read(is, c);
     v.push_back(c);
   }
-  return is;
+  return DECODE_SUCCESS;
 }
 
 template<typename T>
-std::ostream& write(std::ostream& os, const std::vector<T>& v) {
+encode_state write(std::ostream& os, const std::vector<T>& v) {
   uint32_t length = static_cast<uint32_t>(v.size());
   write(os, length);
   std::for_each(v.begin(), v.end(), [&](auto& e) {
       write(os, e);
     });
-  return os;
+  return ENCODE_SUCCESS;
 }
 
 template<typename T>
-std::istream& read(std::istream& is, std::list<T>& v) {
+decode_state read(std::istream& is, std::list<T>& v) {
   uint32_t length;
   read(is, length);
   for(uint32_t i = 0; i != length; ++i) {
@@ -87,21 +100,21 @@ std::istream& read(std::istream& is, std::list<T>& v) {
     read(is, c);
     v.push_back(c);
   }
-  return is;
+  return DECODE_SUCCESS;
 }
 
 template<typename T>
-std::ostream& write(std::ostream& os, const std::list<T>& v) {
+encode_state write(std::ostream& os, const std::list<T>& v) {
   uint32_t length = static_cast<uint32_t>(v.size());
   write(os, length);
   std::for_each(v.begin(), v.end(), [&](auto& e) {
       write(os, e);
     });
-  return os;
+  return ENCODE_SUCCESS;
 }
 
 template<typename T>
-std::istream& read(std::istream& is, std::set<T>& v) {
+decode_state read(std::istream& is, std::set<T>& v) {
   uint32_t length;
   read(is, length);
   for(uint32_t i = 0; i != length; ++i) {
@@ -109,21 +122,21 @@ std::istream& read(std::istream& is, std::set<T>& v) {
     read(is, c);
     v.insert(c);
   }
-  return is;
+  return DECODE_SUCCESS;
 }
 
 template<typename T>
-std::ostream& write(std::ostream& os, const std::set<T>& v) {
+encode_state write(std::ostream& os, const std::set<T>& v) {
   uint32_t length = static_cast<uint32_t>(v.size());
   write(os, length);
   std::for_each(v.begin(), v.end(), [&](auto& e) {
       write(os, e);
     });
-  return os;
+  return ENCODE_SUCCESS;
 }
 
 template<typename K, typename V>
-std::istream& read(std::istream& is, std::map<K, V>& v) {
+decode_state read(std::istream& is, std::map<K, V>& v) {
   uint32_t length;
   read(is, length);
   for(uint32_t i = 0; i != length; ++i) {
@@ -133,18 +146,80 @@ std::istream& read(std::istream& is, std::map<K, V>& v) {
     read(is, value);
     v.insert(std::make_pair(key, value));
   }
-  return is;
+  return DECODE_SUCCESS;
 }
 
 template<typename K, typename V>
-std::ostream& write(std::ostream& os, const std::map<K, V>& v) {
+encode_state write(std::ostream& os, const std::map<K, V>& v) {
   uint32_t length = static_cast<uint32_t>(v.size());
   write(os, length);
   std::for_each(v.begin(), v.end(), [&](auto& e) {
       write(os, e.first);
       write(os, e.second);
     });
+  return ENCODE_SUCCESS;
+}
+
+template<typename K, typename V>
+std::ostream& operator<<(std::ostream& os,
+                         const std::map<K, V>& t) {
+  os << "{ ";
+  for(auto e = t.begin(); e != t.end();) {
+    os << e->first << ": " << e->second;
+    e++;
+    if(e != t.end()) os << ", ";
+  }
+  os << " }";
   return os;
+}
+
+template<typename T>
+std::ostream& operator<<(std::ostream& os,
+                         const std::vector<T>& t) {
+  os << "{ ";
+  for(auto e = t.begin(); e != t.end();) {
+    os << *e;
+    e++;
+    if(e != t.end()) os << ", ";
+  }
+  os << " }";
+  return os;
+}
+
+template<typename T>
+std::ostream& operator<<(std::ostream& os,
+                         const std::list<T>& t) {
+  os << "{ ";
+  for(auto e = t.begin(); e != t.end();) {
+    os << *e;
+    e++;
+    if(e != t.end()) os << ", ";
+  }
+  os << " }";
+  return os;
+}
+
+template<typename T>
+std::ostream& operator<<(std::ostream& os,
+                         const std::set<T>& t) {
+  os << "{ ";
+  for(auto e = t.begin(); e != t.end();) {
+    os << *e;
+    e++;
+    if(e != t.end()) os << ", ";
+  }
+  os << " }";
+  return os;
+}
+
+template<typename T>
+void print_bytes(std::ostream& os, T& str) {
+  os << "[ ";
+  std::for_each(str.begin(), str.end(), [&](auto& e) {
+      os << std::hex << std::uppercase << std::setw(2) << std::setfill('0')
+          << (static_cast<uint32_t>(e) & 0xff) << " ";
+    });
+    os << "]" << std::endl;
 }
 
 }

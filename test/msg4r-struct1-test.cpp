@@ -69,16 +69,6 @@ std::ostream& write(std::ostream& os, const struct1_t& v) {
   return os;
 }
 
-std::ostream& operator<<(std::ostream& os,
-                         const std::map<std::string, std::string>& t) {
-  os << "{ ";
-  std::for_each(t.begin(), t.end(), [&](auto& e) { 
-    os << e.first << ": " << e.second << "; ";
-    });
-  os << "}";
-  return os;
-}
-
 std::ostream& operator<<(std::ostream& os, const msg4r::struct1& v) {
   os << "msg4r::struct1 {"
      << " version: 0x" << std::hex << std::uppercase << std::setw(4) << std::setfill('0') << v.version << ","
@@ -96,6 +86,8 @@ std::ostream& operator<<(std::ostream& os, const msg4r::struct1& v) {
 
 } // namespace msg4r
 
+using namespace msg4r;
+
 BOOST_AUTO_TEST_CASE(struct1_test) {
   msg4r::struct1_t s1 = {
     0xcafe,
@@ -112,12 +104,7 @@ BOOST_AUTO_TEST_CASE(struct1_test) {
   std::stringstream ssm;
   msg4r::write(ssm, s1);
   std::string str = ssm.str();
-  std::cout << "bytes: [ ";
-  std::for_each(str.begin(), str.end(), [&](auto& e) {
-      std::cout << std::hex << std::uppercase << std::setw(2) << std::setfill('0')
-          << (static_cast<uint32_t>(e) & 0xff) << " ";
-    });
-  std::cout << "]" << std::endl;
+  msg4r::print_bytes(std::cout, str);
   msg4r::read(ssm, s2);
   std::cout << "s1 = " << s1 << std::endl;
   std::cout << "s2 = " << s2 << std::endl;

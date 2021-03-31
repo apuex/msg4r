@@ -2,7 +2,7 @@
 
 namespace msg4r {
 
-std::istream& read(std::istream& is, std::string& v) {
+decode_state read(std::istream& is, std::string& v) {
   uint32_t length;
   read(is, length);
   for(uint32_t i = 0; i != length; ++i) {
@@ -10,16 +10,16 @@ std::istream& read(std::istream& is, std::string& v) {
     read(is, c);
     v.push_back(c);
   }
-  return is;
+  return DECODE_SUCCESS;
 }
 
-std::ostream& write(std::ostream& os, const std::string& v) {
+encode_state write(std::ostream& os, const std::string& v) {
   uint32_t length = static_cast<uint32_t>(v.length());
   write(os, length);
   std::for_each(v.begin(), v.end(), [&](auto& e) {
       write(os, e);
     });
-  return os;
+  return ENCODE_SUCCESS;
 }
 
 }

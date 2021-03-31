@@ -4,6 +4,8 @@
 #include <msg4r.h>
 #include <sstream>
 
+using namespace msg4r;
+
 BOOST_AUTO_TEST_CASE(string_test) {
   std::list<uint16_t> s1 = { 0xcafe, 0xbeef };
   std::list<uint16_t> s2;
@@ -16,5 +18,6 @@ BOOST_AUTO_TEST_CASE(string_test) {
   ssm.str("");
   msg4r::write(ssm, s1);
   msg4r::read(ssm, s2);
+  std::cout << s2 << std::endl;
   BOOST_TEST(s1 == s2);
 }

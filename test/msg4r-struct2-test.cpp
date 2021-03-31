@@ -98,6 +98,8 @@ std::ostream& operator<<(std::ostream& os, const msg4r::switch_states& v) {
 
 } // namespace msg4r
 
+using namespace msg4r;
+
 BOOST_AUTO_TEST_CASE(switch_states_test) {
   msg4r::switch_states_t s1 = {
     0x01,
@@ -121,12 +123,7 @@ BOOST_AUTO_TEST_CASE(switch_states_test) {
   std::stringstream ssm;
   msg4r::write(ssm, s1);
   std::string str = ssm.str();
-  std::cout << "bytes: [ ";
-  std::for_each(str.begin(), str.end(), [&](auto& e) {
-      std::cout << std::hex << std::uppercase << std::setw(2) << std::setfill('0')
-          << (static_cast<uint32_t>(e) & 0xff) << " ";
-    });
-  std::cout << "]" << std::endl;
+  msg4r::print_bytes(std::cout, str);
   msg4r::read(ssm, s2);
   std::cout << "s1 = " << s1 << std::endl;
   std::cout << "s2 = " << s2 << std::endl;
