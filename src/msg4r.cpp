@@ -12,13 +12,16 @@ bool expecting(std::istream& is, size_t size) {
 
 decode_state read(std::istream& is, std::string& v) {
   uint32_t length;
-  read(is, length);
+  if (decode_state::DECODE_EXPECTING == read(is, length)) {
+    return decode_state::DECODE_EXPECTING;
+  }
+
   for(uint32_t i = 0; i != length; ++i) {
     uint8_t c;
     read(is, c);
     v.push_back(c);
   }
-  return DECODE_SUCCESS;
+  return decode_state::DECODE_SUCCESS;
 }
 
 encode_state write(std::ostream& os, const std::string& v) {
@@ -27,7 +30,38 @@ encode_state write(std::ostream& os, const std::string& v) {
   std::for_each(v.begin(), v.end(), [&](auto& e) {
       write(os, e);
     });
-  return ENCODE_SUCCESS;
+  return encode_state::ENCODE_SUCCESS;
+}
+
+
+std::ostream& operator<<(std::ostream& os, const encode_state& t) {
+  switch (t) {
+    case encode_state::ENCODE_SUCCESS:
+      os << "ENCODE_SUCCESS";
+      break;
+    case encode_state::ENCODE_WAITING:
+      os << "ENCODE_WAITING";
+      break;
+    case encode_state::ENCODE_FAILURE:
+      os << "ENCODE_FAILURE";
+      break;
+  }
+  return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const decode_state& t) {
+  switch (t) {
+    case decode_state::DECODE_SUCCESS:
+      os << "DECODE_SUCCESS";
+      break;
+    case decode_state::DECODE_EXPECTING:
+      os << "DECODE_EXPECTING";
+      break;
+    case decode_state::DECODE_FAILURE:
+      os << "DECODE_FAILURE";
+      break;
+  }
+  return os;
 }
 
 }

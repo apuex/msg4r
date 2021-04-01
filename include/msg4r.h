@@ -33,17 +33,20 @@ namespace msg4r {
 #define MSG4R_PACKED(n) __attribute__((packed))
 #endif
 
-enum encode_state {
+enum class encode_state {
   ENCODE_SUCCESS   = 0,
   ENCODE_WAITING = 1,
   ENCODE_FAILURE   = 2
 };
 
-enum decode_state {
+enum class decode_state {
   DECODE_SUCCESS   = 0,
   DECODE_EXPECTING = 1,
   DECODE_FAILURE   = 2
 };
+
+std::ostream& operator<<(std::ostream& os, const encode_state& t);
+std::ostream& operator<<(std::ostream& os, const decode_state& t);
 
 /**
  * check input stream to see if there are enough bytes available to read.
@@ -60,11 +63,11 @@ template<typename T>
 decode_state read(std::istream& is, T& v) {
   T t;
   if (expecting(is, sizeof(t))) {
-    return DECODE_EXPECTING;
+    return decode_state::DECODE_EXPECTING;
   } else {
     is.read((char*)&t, sizeof(t));
     v = to_native(t);
-    return DECODE_SUCCESS;
+    return decode_state::DECODE_SUCCESS;
   }
 }
 
@@ -75,7 +78,7 @@ template<typename T>
 encode_state write(std::ostream& os, const T& v) {
   T t = from_native(v);
   os.write((char*)&t, sizeof(t));
-  return ENCODE_SUCCESS;
+  return encode_state::ENCODE_SUCCESS;
 }
 
 template<typename T>
@@ -87,7 +90,7 @@ decode_state read(std::istream& is, std::vector<T>& v) {
     read(is, c);
     v.push_back(c);
   }
-  return DECODE_SUCCESS;
+  return decode_state::DECODE_SUCCESS;
 }
 
 template<typename T>
@@ -97,7 +100,7 @@ encode_state write(std::ostream& os, const std::vector<T>& v) {
   std::for_each(v.begin(), v.end(), [&](auto& e) {
       write(os, e);
     });
-  return ENCODE_SUCCESS;
+  return encode_state::ENCODE_SUCCESS;
 }
 
 template<typename T>
@@ -109,7 +112,7 @@ decode_state read(std::istream& is, std::list<T>& v) {
     read(is, c);
     v.push_back(c);
   }
-  return DECODE_SUCCESS;
+  return decode_state::DECODE_SUCCESS;
 }
 
 template<typename T>
@@ -119,7 +122,7 @@ encode_state write(std::ostream& os, const std::list<T>& v) {
   std::for_each(v.begin(), v.end(), [&](auto& e) {
       write(os, e);
     });
-  return ENCODE_SUCCESS;
+  return encode_state::ENCODE_SUCCESS;
 }
 
 template<typename T>
@@ -131,7 +134,7 @@ decode_state read(std::istream& is, std::set<T>& v) {
     read(is, c);
     v.insert(c);
   }
-  return DECODE_SUCCESS;
+  return decode_state::DECODE_SUCCESS;
 }
 
 template<typename T>
@@ -141,7 +144,7 @@ encode_state write(std::ostream& os, const std::set<T>& v) {
   std::for_each(v.begin(), v.end(), [&](auto& e) {
       write(os, e);
     });
-  return ENCODE_SUCCESS;
+  return encode_state::ENCODE_SUCCESS;
 }
 
 template<typename K, typename V>
@@ -155,7 +158,7 @@ decode_state read(std::istream& is, std::map<K, V>& v) {
     read(is, value);
     v.insert(std::make_pair(key, value));
   }
-  return DECODE_SUCCESS;
+  return decode_state::DECODE_SUCCESS;
 }
 
 template<typename K, typename V>
@@ -166,7 +169,7 @@ encode_state write(std::ostream& os, const std::map<K, V>& v) {
       write(os, e.first);
       write(os, e.second);
     });
-  return ENCODE_SUCCESS;
+  return encode_state::ENCODE_SUCCESS;
 }
 
 template<typename K, typename V>
