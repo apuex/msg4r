@@ -151,7 +151,7 @@ endif()
 
 ADD_EXECUTABLE(msg4r-int-test ${MSG4R_INT_TEST_SRCS})
 target_include_directories(msg4r-int-test PRIVATE ${Boost_INCLUDE_DIRS})
-target_link_libraries(msg4r-int-test ${Boost_LIBRARIES} ${Boost_unit_test_framework})
+target_link_libraries(msg4r-int-test msg4r ${Boost_LIBRARIES} ${Boost_unit_test_framework})
 if(UNIX)
 set_target_properties(msg4r-int-test PROPERTIES LINK_FLAGS_RELEASE -s)
 endif()

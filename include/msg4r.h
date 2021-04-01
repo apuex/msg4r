@@ -45,6 +45,11 @@ enum decode_state {
   DECODE_FAILURE   = 2
 };
 
+/**
+ * check input stream to see if there are enough bytes available to read.
+ */
+bool expecting(std::istream& is, size_t size);
+
 decode_state read(std::istream& is, std::string& v);
 encode_state write(std::ostream& os, const std::string& v);
 
@@ -54,9 +59,13 @@ encode_state write(std::ostream& os, const std::string& v);
 template<typename T>
 decode_state read(std::istream& is, T& v) {
   T t;
-  is.read((char*)&t, sizeof(t));
-  v = to_native(t);
-  return DECODE_SUCCESS;
+  if (expecting(is, sizeof(t))) {
+    return DECODE_EXPECTING;
+  } else {
+    is.read((char*)&t, sizeof(t));
+    v = to_native(t);
+    return DECODE_SUCCESS;
+  }
 }
 
 /**
