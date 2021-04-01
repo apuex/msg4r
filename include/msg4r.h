@@ -67,7 +67,7 @@ decode_state read(std::istream& is, std::string& v);
 encode_state write(std::ostream& os, const std::string& v);
 
 /**
- * read integers and floating-point numbers. T = { int8_t, ... }
+ * read integers and numbers. T = { int8_t, ... }
  */
 template<typename T>
 decode_state read(std::istream& is, T& v) {
@@ -82,7 +82,7 @@ decode_state read(std::istream& is, T& v) {
 }
 
 /**
- * write integers and floating-point numbers. T = { int8_t, ... }
+ * write integers and numbers. T = { int8_t, ... }
  */
 template<typename T>
 encode_state write(std::ostream& os, const T& v) {
