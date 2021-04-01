@@ -55,21 +55,21 @@ BOOST_AUTO_TEST_CASE(istream3_test) {
   msg4r::write(ssm, s1);
   // length after write s1
   ssm.seekg(0, ssm.end);
-  BOOST_TEST(ssm.tellg() == 12);
+  BOOST_TEST(ssm.tellg() == 8 + sizeof(MSG4R_SIZE_T));
 
   msg4r::write(ssm, b1);
   // length after write b1
   ssm.seekg(0, ssm.end);
-  BOOST_TEST(ssm.tellg() == 13);
+  BOOST_TEST(ssm.tellg() == 8 + sizeof(MSG4R_SIZE_T) + 1);
 
   ssm.seekg(pos);
   msg4r::read(ssm, s2);
-  BOOST_TEST(ssm.tellg() == 12);
+  BOOST_TEST(ssm.tellg() == 8 + sizeof(MSG4R_SIZE_T));
   BOOST_TEST(!ssm.eof());
   BOOST_TEST(s1 == s2);
 
   msg4r::read(ssm, b2);
-  BOOST_TEST(ssm.tellg() == 13);
+  BOOST_TEST(ssm.tellg() == 8 + sizeof(MSG4R_SIZE_T) + 1);
   BOOST_TEST(!ssm.eof());
   BOOST_TEST(b1 == b2);
 }

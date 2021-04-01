@@ -2,7 +2,7 @@
 
 namespace msg4r {
 
-bool expecting(std::istream& is, size_t size) {
+bool expecting(std::istream& is, MSG4R_SIZE_T size) {
   std::istream::pos_type cur_pos = is.tellg();
   is.seekg(0, is.end);
   std::istream::pos_type end_pos = is.tellg();
@@ -11,7 +11,7 @@ bool expecting(std::istream& is, size_t size) {
 }
 
 decode_state read(std::istream& is, std::string& v) {
-  uint32_t length;
+  MSG4R_SIZE_T length;
   if (decode_state::DECODE_EXPECTING == read(is, length)) {
     return decode_state::DECODE_EXPECTING;
   }
@@ -20,7 +20,7 @@ decode_state read(std::istream& is, std::string& v) {
     return decode_state::DECODE_EXPECTING;
   }
 
-  for(uint32_t i = 0; i != length; ++i) {
+  for (MSG4R_SIZE_T i = 0; i != length; ++i) {
     uint8_t c;
     read(is, c);
     v.push_back(c);
@@ -29,7 +29,7 @@ decode_state read(std::istream& is, std::string& v) {
 }
 
 encode_state write(std::ostream& os, const std::string& v) {
-  uint32_t length = static_cast<uint32_t>(v.length());
+  MSG4R_SIZE_T length = static_cast<MSG4R_SIZE_T>(v.length());
   write(os, length);
   std::for_each(v.begin(), v.end(), [&](auto& e) {
       write(os, e);

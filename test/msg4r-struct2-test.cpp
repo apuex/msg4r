@@ -29,7 +29,7 @@ typedef struct MSG4R_PACKED(2) switch_states {
 //#pragma pack(pop, r1)
 
 // for equals tests in testcases.
-bool operator==(const switch_states& lhs, const switch_states& rhs) {
+bool operator==(const switch_states_t& lhs, const switch_states_t& rhs) {
   return (*reinterpret_cast<const uint16_t*>(&lhs))
       == (*reinterpret_cast<const uint16_t*>(&rhs));
 
@@ -74,6 +74,20 @@ bool operator==(const switch_states& lhs, const switch_states& rhs) {
 }
 */
 
+std::istream& read(std::istream& is, switch_states_t& v) {
+  for (size_t i = 0; i != sizeof(v); ++i) {
+    msg4r::read(is, *(reinterpret_cast<uint8_t*>(&v) + i));
+  }
+  return is;
+}
+
+std::ostream& write(std::ostream& os, const switch_states_t& v) {
+  for (size_t i = 0; i != sizeof(v); ++i) {
+    msg4r::write(os, *(reinterpret_cast<const uint8_t*>(&v) + i));
+  }
+  return os;
+}
+
 std::ostream& operator<<(std::ostream& os, const msg4r::switch_states& v) {
   os << "msg4r::switch_states {"
      << " SW0: " << v.SW0 << ","
@@ -102,7 +116,7 @@ using namespace msg4r;
 
 BOOST_AUTO_TEST_CASE(switch_states_test) {
   msg4r::switch_states_t s1 = {
-    0x01,
+    0x00,
     0x01,
     0x01,
     0x01,

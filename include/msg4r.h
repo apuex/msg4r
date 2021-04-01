@@ -15,6 +15,10 @@
 
 namespace msg4r {
 
+#ifndef MSG4R_SIZE_T
+#define MSG4R_SIZE_T uint32_t
+#endif
+
 #ifdef MSG4R_BIG_ENDIAN
 #define from_native boost::endian::native_to_big
 #define to_native boost::endian::big_to_native
@@ -35,7 +39,7 @@ namespace msg4r {
 
 enum class encode_state {
   ENCODE_SUCCESS   = 0,
-  ENCODE_WAITING = 1,
+  ENCODE_WAITING   = 1,
   ENCODE_FAILURE   = 2
 };
 
@@ -51,7 +55,7 @@ std::ostream& operator<<(std::ostream& os, const decode_state& t);
 /**
  * check input stream to see if there are enough bytes available to read.
  */
-bool expecting(std::istream& is, size_t size);
+bool expecting(std::istream& is, MSG4R_SIZE_T size);
 
 decode_state read(std::istream& is, std::string& v);
 encode_state write(std::ostream& os, const std::string& v);
@@ -83,9 +87,9 @@ encode_state write(std::ostream& os, const T& v) {
 
 template<typename T>
 decode_state read(std::istream& is, std::vector<T>& v) {
-  uint32_t length;
+  MSG4R_SIZE_T length;
   read(is, length);
-  for(uint32_t i = 0; i != length; ++i) {
+  for (MSG4R_SIZE_T i = 0; i != length; ++i) {
     T c;
     read(is, c);
     v.push_back(c);
@@ -95,7 +99,7 @@ decode_state read(std::istream& is, std::vector<T>& v) {
 
 template<typename T>
 encode_state write(std::ostream& os, const std::vector<T>& v) {
-  uint32_t length = static_cast<uint32_t>(v.size());
+  MSG4R_SIZE_T length = static_cast<MSG4R_SIZE_T>(v.size());
   write(os, length);
   std::for_each(v.begin(), v.end(), [&](auto& e) {
       write(os, e);
@@ -105,9 +109,9 @@ encode_state write(std::ostream& os, const std::vector<T>& v) {
 
 template<typename T>
 decode_state read(std::istream& is, std::list<T>& v) {
-  uint32_t length;
+  MSG4R_SIZE_T length;
   read(is, length);
-  for(uint32_t i = 0; i != length; ++i) {
+  for (MSG4R_SIZE_T i = 0; i != length; ++i) {
     T c;
     read(is, c);
     v.push_back(c);
@@ -117,7 +121,7 @@ decode_state read(std::istream& is, std::list<T>& v) {
 
 template<typename T>
 encode_state write(std::ostream& os, const std::list<T>& v) {
-  uint32_t length = static_cast<uint32_t>(v.size());
+  MSG4R_SIZE_T length = static_cast<MSG4R_SIZE_T>(v.size());
   write(os, length);
   std::for_each(v.begin(), v.end(), [&](auto& e) {
       write(os, e);
@@ -127,9 +131,9 @@ encode_state write(std::ostream& os, const std::list<T>& v) {
 
 template<typename T>
 decode_state read(std::istream& is, std::set<T>& v) {
-  uint32_t length;
+  MSG4R_SIZE_T length;
   read(is, length);
-  for(uint32_t i = 0; i != length; ++i) {
+  for (MSG4R_SIZE_T i = 0; i != length; ++i) {
     T c;
     read(is, c);
     v.insert(c);
@@ -139,7 +143,7 @@ decode_state read(std::istream& is, std::set<T>& v) {
 
 template<typename T>
 encode_state write(std::ostream& os, const std::set<T>& v) {
-  uint32_t length = static_cast<uint32_t>(v.size());
+  MSG4R_SIZE_T length = static_cast<MSG4R_SIZE_T>(v.size());
   write(os, length);
   std::for_each(v.begin(), v.end(), [&](auto& e) {
       write(os, e);
@@ -149,9 +153,9 @@ encode_state write(std::ostream& os, const std::set<T>& v) {
 
 template<typename K, typename V>
 decode_state read(std::istream& is, std::map<K, V>& v) {
-  uint32_t length;
+  MSG4R_SIZE_T length;
   read(is, length);
-  for(uint32_t i = 0; i != length; ++i) {
+  for (MSG4R_SIZE_T i = 0; i != length; ++i) {
     K key;
     V value;
     read(is, key);
@@ -163,7 +167,7 @@ decode_state read(std::istream& is, std::map<K, V>& v) {
 
 template<typename K, typename V>
 encode_state write(std::ostream& os, const std::map<K, V>& v) {
-  uint32_t length = static_cast<uint32_t>(v.size());
+  MSG4R_SIZE_T length = static_cast<MSG4R_SIZE_T>(v.size());
   write(os, length);
   std::for_each(v.begin(), v.end(), [&](auto& e) {
       write(os, e.first);
@@ -175,7 +179,7 @@ encode_state write(std::ostream& os, const std::map<K, V>& v) {
 template<typename K, typename V>
 std::ostream& operator<<(std::ostream& os,
                          const std::map<K, V>& t) {
-  os << "{ ";
+  os << "std::map { ";
   for(auto e = t.begin(); e != t.end();) {
     os << e->first << ": " << e->second;
     e++;
@@ -188,7 +192,7 @@ std::ostream& operator<<(std::ostream& os,
 template<typename T>
 std::ostream& operator<<(std::ostream& os,
                          const std::vector<T>& t) {
-  os << "{ ";
+  os << "std::vector { ";
   for(auto e = t.begin(); e != t.end();) {
     os << *e;
     e++;
@@ -201,7 +205,7 @@ std::ostream& operator<<(std::ostream& os,
 template<typename T>
 std::ostream& operator<<(std::ostream& os,
                          const std::list<T>& t) {
-  os << "{ ";
+  os << "std::list { ";
   for(auto e = t.begin(); e != t.end();) {
     os << *e;
     e++;
@@ -214,7 +218,7 @@ std::ostream& operator<<(std::ostream& os,
 template<typename T>
 std::ostream& operator<<(std::ostream& os,
                          const std::set<T>& t) {
-  os << "{ ";
+  os << "std::set { ";
   for(auto e = t.begin(); e != t.end();) {
     os << *e;
     e++;
