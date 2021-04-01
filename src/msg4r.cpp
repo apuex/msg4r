@@ -16,6 +16,10 @@ decode_state read(std::istream& is, std::string& v) {
     return decode_state::DECODE_EXPECTING;
   }
 
+  if (expecting(is, length)) {
+    return decode_state::DECODE_EXPECTING;
+  }
+
   for(uint32_t i = 0; i != length; ++i) {
     uint8_t c;
     read(is, c);
