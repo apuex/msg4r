@@ -10,6 +10,42 @@ bool expecting(std::istream& is, MSG4R_SIZE_T size) {
   return ((end_pos - cur_pos) < size);
 }
 
+decode_state read(std::istream& is, float32_t& v) {
+  uint32_t t;
+  if (expecting(is, sizeof(t))) {
+    return decode_state::DECODE_EXPECTING;
+  } else {
+    is.read((char*)&t, sizeof(t));
+    *reinterpret_cast<uint32_t*>(&v) = to_native(t);
+    return decode_state::DECODE_SUCCESS;
+  }
+}
+
+encode_state write(std::ostream& os, const float32_t& v) {
+  uint32_t t;
+  t = from_native(*reinterpret_cast<const uint32_t*>(&v));
+  os.write((char*)&t, sizeof(t));
+  return encode_state::ENCODE_SUCCESS;
+}
+
+decode_state read(std::istream& is, float64_t& v) {
+  uint64_t t;
+  if (expecting(is, sizeof(t))) {
+    return decode_state::DECODE_EXPECTING;
+  } else {
+    is.read((char*)&t, sizeof(t));
+    *reinterpret_cast<uint64_t*>(&v) = to_native(t);
+    return decode_state::DECODE_SUCCESS;
+  }
+}
+
+encode_state write(std::ostream& os, const float64_t& v) {
+  uint64_t t;
+  t = from_native(*reinterpret_cast<const uint64_t*>(&v));
+  os.write((char*)&t, sizeof(t));
+  return encode_state::ENCODE_SUCCESS;
+}
+
 decode_state read(std::istream& is, std::string& v) {
   MSG4R_SIZE_T length;
   if (decode_state::DECODE_EXPECTING == read(is, length)) {

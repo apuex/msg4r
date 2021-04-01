@@ -57,6 +57,12 @@ std::ostream& operator<<(std::ostream& os, const decode_state& t);
  */
 bool expecting(std::istream& is, MSG4R_SIZE_T size);
 
+decode_state read(std::istream& is, float32_t& v);
+encode_state write(std::ostream& os, const float32_t& v);
+
+decode_state read(std::istream& is, float64_t& v);
+encode_state write(std::ostream& os, const float64_t& v);
+
 decode_state read(std::istream& is, std::string& v);
 encode_state write(std::ostream& os, const std::string& v);
 
