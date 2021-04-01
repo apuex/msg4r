@@ -75,10 +75,10 @@ std::ostream& operator<<(std::ostream& os, const msg4r::struct1& v) {
      << " class_type: 0x" << std::hex << std::uppercase << std::setw(4) << std::setfill('0') << v.class_type << ","
      << " id: " << std::dec << v.id << ","
      << " value_type: " << v.value_type << ","
-     << " name: \"" << v.name << "\","
+     << " name: " << v.name << ","
      << " state: " << v.state << ","
      << " analog: " << v.analog << ","
-     << " str: \"" << v.str << "\","
+     << " str: " << v.str << ","
      << " props: " << v.props << ""
      << " }";
   return os;
