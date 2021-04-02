@@ -272,10 +272,12 @@ template<typename T>
 void print_bytes(std::ostream& os, T& str) {
   os << "[ ";
   std::for_each(str.begin(), str.end(), [&](auto& e) {
-      os << std::hex << std::uppercase << std::setw(2) << std::setfill('0')
-          << (static_cast<uint32_t>(e) & 0xff) << " ";
-    });
-    os << "]" << std::endl;
+    os << std::hex << std::uppercase << std::setw(2) << std::setfill('0')
+       << (static_cast<uint32_t>(e) & 0xff) << " ";
+  });
+  os << "]" << std::endl;
 }
+
+void print_bytes(std::ostream& os, const char* buff, const size_t length);
 
 }

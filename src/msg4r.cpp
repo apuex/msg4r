@@ -116,4 +116,13 @@ std::ostream& operator<<(std::ostream& os, const std::string& t) {
   return os;
 }
 
+void print_bytes(std::ostream& os, const char* buff, const size_t length) {
+  os << "[ ";
+  for (size_t i = 0; i != length; ++i) {
+    os << std::hex << std::uppercase << std::setw(2) << std::setfill('0')
+       << (static_cast<uint32_t>(buff[i]) & 0xff) << " ";
+  }
+  os << "]" << std::endl;
+}
+
 }

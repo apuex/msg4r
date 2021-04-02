@@ -73,3 +73,41 @@ BOOST_AUTO_TEST_CASE(istream3_test) {
   BOOST_TEST(!ssm.eof());
   BOOST_TEST(b1 == b2);
 }
+
+BOOST_AUTO_TEST_CASE(istream4_test) {
+  uint16_t b1 = 0xcafe;
+  uint32_t b2 = 0x00;
+  std::stringstream ssm;
+  std::istream::pos_type pos;
+
+  msg4r::write(ssm, b1);
+
+  BOOST_TEST(decode_state::DECODE_EXPECTING == msg4r::read(ssm, b2));
+  pos = ssm.tellg();
+  BOOST_TEST(0 == pos);
+  BOOST_TEST(!ssm.eof());
+  BOOST_TEST(b1 != b2);
+}
+
+BOOST_AUTO_TEST_CASE(istream5_test) {
+  std::string s1 = "01234567";
+  std::string s2;
+  char buff[16];
+  char expect[16] = {0x08, '0', '1', '2', '3', '4', '5', '6', '7'};
+  std::stringstream ssm;
+  std::istream::pos_type pos;
+
+  msg4r::write(ssm, s1);
+  pos = ssm.tellg();
+  BOOST_TEST(0 == pos);
+  BOOST_TEST(0 == ssm.gcount());
+
+  memset(buff, 0, sizeof(buff));
+  ssm.read(buff, sizeof(buff));
+  pos = ssm.tellg();
+  BOOST_TEST(-1 == pos);
+  BOOST_TEST((8 + sizeof(MSG4R_SIZE_T)) == ssm.gcount());
+  BOOST_TEST(ssm.eof());
+  msg4r::print_bytes(std::cout, buff, sizeof(buff));
+  BOOST_TEST(expect == buff);
+}
