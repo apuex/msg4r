@@ -55,6 +55,7 @@ std::ostream& operator<<(std::ostream& os, const decode_state& t);
  * check input stream to see if there are enough bytes available to read.
  */
 bool expecting(std::istream& is, MSG4R_SIZE_T size);
+void rollback(std::istream& is, MSG4R_SIZE_T size);
 
 decode_state read(std::istream& is, float32_t& v);
 encode_state write(std::ostream& os, const float32_t& v);
@@ -95,7 +96,15 @@ encode_state write(std::ostream& os, const T& v) {
 template<typename T>
 decode_state read(std::istream& is, std::vector<T>& v) {
   MSG4R_SIZE_T length;
-  read(is, length);
+  if (decode_state::DECODE_EXPECTING == read(is, length)) {
+    return decode_state::DECODE_EXPECTING;
+  }
+
+  if (expecting(is, length)) {
+    rollback(is, sizeof(length));
+    return decode_state::DECODE_EXPECTING;
+  }
+
   for (MSG4R_SIZE_T i = 0; i != length; ++i) {
     T c;
     read(is, c);
@@ -117,7 +126,15 @@ encode_state write(std::ostream& os, const std::vector<T>& v) {
 template<typename T>
 decode_state read(std::istream& is, std::list<T>& v) {
   MSG4R_SIZE_T length;
-  read(is, length);
+  if (decode_state::DECODE_EXPECTING == read(is, length)) {
+    return decode_state::DECODE_EXPECTING;
+  }
+
+  if (expecting(is, length)) {
+    rollback(is, sizeof(length));
+    return decode_state::DECODE_EXPECTING;
+  }
+
   for (MSG4R_SIZE_T i = 0; i != length; ++i) {
     T c;
     read(is, c);
@@ -139,7 +156,15 @@ encode_state write(std::ostream& os, const std::list<T>& v) {
 template<typename T>
 decode_state read(std::istream& is, std::set<T>& v) {
   MSG4R_SIZE_T length;
-  read(is, length);
+  if (decode_state::DECODE_EXPECTING == read(is, length)) {
+    return decode_state::DECODE_EXPECTING;
+  }
+
+  if (expecting(is, length)) {
+    rollback(is, sizeof(length));
+    return decode_state::DECODE_EXPECTING;
+  }
+
   for (MSG4R_SIZE_T i = 0; i != length; ++i) {
     T c;
     read(is, c);
@@ -161,7 +186,15 @@ encode_state write(std::ostream& os, const std::set<T>& v) {
 template<typename K, typename V>
 decode_state read(std::istream& is, std::map<K, V>& v) {
   MSG4R_SIZE_T length;
-  read(is, length);
+  if (decode_state::DECODE_EXPECTING == read(is, length)) {
+    return decode_state::DECODE_EXPECTING;
+  }
+
+  if (expecting(is, length)) {
+    rollback(is, sizeof(length));
+    return decode_state::DECODE_EXPECTING;
+  }
+
   for (MSG4R_SIZE_T i = 0; i != length; ++i) {
     K key;
     V value;

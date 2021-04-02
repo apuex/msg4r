@@ -10,6 +10,11 @@ bool expecting(std::istream& is, MSG4R_SIZE_T size) {
   return ((end_pos - cur_pos) < size);
 }
 
+void rollback(std::istream& is, MSG4R_SIZE_T size) {
+  std::istream::pos_type cur_pos = is.tellg();
+  is.seekg(cur_pos - std::istream::pos_type(size));
+}
+
 decode_state read(std::istream& is, float32_t& v) {
   uint32_t t;
   if (expecting(is, sizeof(t))) {
@@ -53,6 +58,7 @@ decode_state read(std::istream& is, std::string& v) {
   }
 
   if (expecting(is, length)) {
+    rollback(is, sizeof(length));
     return decode_state::DECODE_EXPECTING;
   }
 
