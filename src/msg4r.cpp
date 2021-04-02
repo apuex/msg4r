@@ -73,7 +73,6 @@ encode_state write(std::ostream& os, const std::string& v) {
   return encode_state::ENCODE_SUCCESS;
 }
 
-
 std::ostream& operator<<(std::ostream& os, const encode_state& t) {
   switch (t) {
     case encode_state::ENCODE_SUCCESS:
@@ -101,6 +100,13 @@ std::ostream& operator<<(std::ostream& os, const decode_state& t) {
       os << "DECODE_FAILURE";
       break;
   }
+  return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const std::string& t) {
+  std::operator<<(os, "\"");
+  std::operator<<(os, t);
+  std::operator<<(os, "\"");
   return os;
 }
 

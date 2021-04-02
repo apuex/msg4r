@@ -65,6 +65,8 @@ encode_state write(std::ostream& os, const float64_t& v);
 decode_state read(std::istream& is, std::string& v);
 encode_state write(std::ostream& os, const std::string& v);
 
+std::ostream& operator<<(std::ostream& os, const std::string& t);
+
 /**
  * read integers and numbers. T = { int8_t, ... }
  */
