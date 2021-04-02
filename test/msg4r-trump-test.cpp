@@ -51,7 +51,7 @@ std::ostream& write(std::ostream& os, const struct1_t& v) {
 
 std::ostream& operator<<(std::ostream& os, const msg4r::struct1& v) {
   // os.unsetf(std::ios::fixed | std::ios::scientific);
-  os << std::ios::fixed
+  os << std::fixed
      << "msg4r::struct1 {"
      << " name: " << v.name << ","
      << " salary: " << v.salary << ","
