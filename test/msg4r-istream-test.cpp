@@ -50,26 +50,26 @@ BOOST_AUTO_TEST_CASE(istream3_test) {
   std::istream::pos_type pos = ssm.tellg();
   // get length
   ssm.seekg(0, ssm.end);
-  BOOST_TEST(ssm.tellg() == 0);
+  BOOST_TEST(ssm.tellg() == static_cast<std::istream::pos_type>(0));
 
   msg4r::write(ssm, s1);
   // length after write s1
   ssm.seekg(0, ssm.end);
-  BOOST_TEST(ssm.tellg() == 8 + sizeof(MSG4R_SIZE_T));
+  BOOST_TEST(ssm.tellg() == static_cast<std::istream::pos_type>(8 + sizeof(MSG4R_SIZE_T)));
 
   msg4r::write(ssm, b1);
   // length after write b1
   ssm.seekg(0, ssm.end);
-  BOOST_TEST(ssm.tellg() == 8 + sizeof(MSG4R_SIZE_T) + 1);
+  BOOST_TEST(ssm.tellg() == static_cast<std::istream::pos_type>(8 + sizeof(MSG4R_SIZE_T) + 1));
 
   ssm.seekg(pos);
   msg4r::read(ssm, s2);
-  BOOST_TEST(ssm.tellg() == 8 + sizeof(MSG4R_SIZE_T));
+  BOOST_TEST(ssm.tellg() == static_cast<std::istream::pos_type>(8 + sizeof(MSG4R_SIZE_T)));
   BOOST_TEST(!ssm.eof());
   BOOST_TEST(s1 == s2);
 
   msg4r::read(ssm, b2);
-  BOOST_TEST(ssm.tellg() == 8 + sizeof(MSG4R_SIZE_T) + 1);
+  BOOST_TEST(ssm.tellg() == static_cast<std::istream::pos_type>(8 + sizeof(MSG4R_SIZE_T) + 1));
   BOOST_TEST(!ssm.eof());
   BOOST_TEST(b1 == b2);
 }
@@ -84,7 +84,7 @@ BOOST_AUTO_TEST_CASE(istream4_test) {
 
   BOOST_TEST(decode_state::DECODE_EXPECTING == msg4r::read(ssm, b2));
   pos = ssm.tellg();
-  BOOST_TEST(0 == pos);
+  BOOST_TEST(static_cast<std::istream::pos_type>(0) == pos);
   BOOST_TEST(!ssm.eof());
   BOOST_TEST(b1 != b2);
 }
@@ -99,15 +99,16 @@ BOOST_AUTO_TEST_CASE(istream5_test) {
 
   msg4r::write(ssm, s1);
   pos = ssm.tellg();
-  BOOST_TEST(0 == pos);
+  BOOST_TEST(static_cast<std::istream::pos_type>(0) == pos);
   BOOST_TEST(0 == ssm.gcount());
 
   memset(buff, 0, sizeof(buff));
   ssm.read(buff, sizeof(buff));
   pos = ssm.tellg();
-  BOOST_TEST(-1 == pos);
-  BOOST_TEST((8 + sizeof(MSG4R_SIZE_T)) == ssm.gcount());
+  BOOST_TEST(static_cast<std::istream::pos_type>(-1) == pos);
+  BOOST_TEST(static_cast<std::istream::pos_type>(8 + sizeof(MSG4R_SIZE_T)) == ssm.gcount());
   BOOST_TEST(ssm.eof());
   msg4r::print_bytes(std::cout, buff, sizeof(buff));
   BOOST_TEST(expect == buff);
 }
+

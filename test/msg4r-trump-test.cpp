@@ -69,7 +69,7 @@ using namespace msg4r;
 BOOST_AUTO_TEST_CASE(struct1_test) {
   msg4r::struct1_t s1 = {
     "Donald J. Trump",
-    35.6,
+    35.6f,
     12345678901.234,
     "President",
     { {"mother", "fucker"}, { "dead", "face" } }
