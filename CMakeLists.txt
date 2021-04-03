@@ -89,6 +89,10 @@ SET(MSG4R_MAP_TEST_SRCS
   test/msg4r-map-test.cpp
 )
 
+SET(MSG4R_NUMBER_PARSER_TEST_SRCS
+  test/msg4r-number-parser-test.cpp
+)
+
 SET(MSG4R_SET_TEST_SRCS
   test/msg4r-set-test.cpp
 )
@@ -177,6 +181,14 @@ if(UNIX)
 set_target_properties(msg4r-map-test PROPERTIES LINK_FLAGS_RELEASE -s)
 endif()
 ADD_TEST(NAME msg4r-map-test COMMAND msg4r-map-test)
+
+ADD_EXECUTABLE(msg4r-number-parser-test ${MSG4R_NUMBER_PARSER_TEST_SRCS})
+target_include_directories(msg4r-number-parser-test PRIVATE ${Boost_INCLUDE_DIRS})
+target_link_libraries(msg4r-number-parser-test msg4r ${Boost_LIBRARIES} ${Boost_unit_test_framework})
+if(UNIX)
+set_target_properties(msg4r-number-parser-test PROPERTIES LINK_FLAGS_RELEASE -s)
+endif()
+ADD_TEST(NAME msg4r-number-parser-test COMMAND msg4r-number-parser-test)
 
 ADD_EXECUTABLE(msg4r-set-test ${MSG4R_SET_TEST_SRCS})
 target_include_directories(msg4r-set-test PRIVATE ${Boost_INCLUDE_DIRS})
