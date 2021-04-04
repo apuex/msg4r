@@ -63,14 +63,12 @@ struct number_parser {
   virtual ~number_parser();
   decode_state operator()(std::istream& is, T& v);
 
-  size_t count; 
-  union {
-    T t;
-    char buff[sizeof(T)];
-  } repr; 
+  MSG4R_SIZE_T length; 
+  MSG4R_SIZE_T index; 
+  T t;
 };
 
-template<typename T> number_parser<T>::number_parser(): count(0), repr() { }
+template<typename T> number_parser<T>::number_parser(): index(0), t() { }
 template<typename T> number_parser<T>::~number_parser() { }
 
 template<> decode_state number_parser<float32_t>::operator()(std::istream& is, float32_t& v);
@@ -79,15 +77,16 @@ template<> decode_state number_parser<float64_t>::operator()(std::istream& is, f
 template<typename T>
 decode_state number_parser<T>::operator()(std::istream& is, T& v) {
   auto initial = is.gcount();
-  is.read((char*)&repr.buff + count, sizeof(T));
+  is.read((char*)&t + index, sizeof(T));
   auto current = is.gcount();
-  count += (current - initial);
+  index += (current - initial);
   if(is.eof()) {
     return decode_state::DECODE_EXPECTING;
   } else {
-    v = to_native(repr.t);
-    count  = 0; // reset to initial state
-    repr.t = 0; // reset to initial state
+    v = to_native(t);
+    length = 0; // reset to initial state
+    index  = 0; // reset to initial state
+    t      = 0; // reset to initial state
     return decode_state::DECODE_SUCCESS;
   }
 }
