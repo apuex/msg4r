@@ -59,25 +59,9 @@ void rollback(std::istream& is, MSG4R_SIZE_T size);
 
 template <typename T>
 struct number_parser {
-  number_parser(): count(0), repr() {}
-  decode_state operator()(std::istream& is, T& v) {
-    return read(is, v);
-  }
-
-  decode_state read(std::istream& is, T& v) {
-    auto initial = is.gcount();
-    is.read((char*)&repr.buff + count, sizeof(T));
-    auto current = is.gcount();
-    count += (current - initial);
-    if(is.eof()) {
-      return decode_state::DECODE_EXPECTING;
-    } else {
-      v = to_native(repr.t);
-      count  = 0; // reset to initial state
-      repr.t = 0; // reset to initial state
-      return decode_state::DECODE_SUCCESS;
-    }
-  }
+  number_parser();
+  virtual ~number_parser();
+  decode_state operator()(std::istream& is, T& v);
 
   size_t count; 
   union {
@@ -85,6 +69,28 @@ struct number_parser {
     char buff[sizeof(T)];
   } repr; 
 };
+
+template<typename T> number_parser<T>::number_parser(): count(0), repr() { }
+template<typename T> number_parser<T>::~number_parser() { }
+
+template<> decode_state number_parser<float32_t>::operator()(std::istream& is, float32_t& v);
+template<> decode_state number_parser<float64_t>::operator()(std::istream& is, float64_t& v);
+
+template<typename T>
+decode_state number_parser<T>::operator()(std::istream& is, T& v) {
+  auto initial = is.gcount();
+  is.read((char*)&repr.buff + count, sizeof(T));
+  auto current = is.gcount();
+  count += (current - initial);
+  if(is.eof()) {
+    return decode_state::DECODE_EXPECTING;
+  } else {
+    v = to_native(repr.t);
+    count  = 0; // reset to initial state
+    repr.t = 0; // reset to initial state
+    return decode_state::DECODE_SUCCESS;
+  }
+}
 
 decode_state read(std::istream& is, float32_t& v);
 encode_state write(std::ostream& os, const float32_t& v);

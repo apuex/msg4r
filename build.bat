@@ -1,9 +1,9 @@
 cmake.exe ^
-  -DBoost_DIR=D:\usr\lib\cmake\Boost-1.75.0 ^
-  -DBoost_INCLUDE_DIR=D:\usr\include ^
-  -DBoost_LIBRARY_DIRS=D:\usr\lib ^
+  -DBoost_DIR=E:\usr\lib\cmake\Boost-1.75.0 ^
+  -DBoost_INCLUDE_DIR=E:\usr\include ^
+  -DBoost_LIBRARY_DIRS=E:\usr\lib ^
   -DCMAKE_BUILD_TYPE=Release ^
-  -DCMAKE_INSTALL_PREFIX=D:\usr ^
+  -DCMAKE_INSTALL_PREFIX=E:\usr ^
   -S . ^
   -B dist ^
   -G "NMake Makefiles"

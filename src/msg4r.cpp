@@ -15,6 +15,36 @@ void rollback(std::istream& is, MSG4R_SIZE_T size) {
   is.seekg(cur_pos - std::istream::pos_type(size));
 }
 
+template<> decode_state number_parser<float32_t>::operator()(std::istream& is, float32_t& v) {
+  auto initial = is.gcount();
+  is.read((char*)&repr.buff + count, sizeof(float32_t));
+  auto current = is.gcount();
+  count += (current - initial);
+  if(is.eof()) {
+    return decode_state::DECODE_EXPECTING;
+  } else {
+    *reinterpret_cast<uint32_t*>(&v) = to_native(*reinterpret_cast<uint32_t*>(&repr.t));
+    count  = 0; // reset to initial state
+    repr.t = 0; // reset to initial state
+    return decode_state::DECODE_SUCCESS;
+  }
+}
+
+template<> decode_state number_parser<float64_t>::operator()(std::istream& is, float64_t& v) {
+  auto initial = is.gcount();
+  is.read((char*)&repr.buff + count, sizeof(float64_t));
+  auto current = is.gcount();
+  count += (current - initial);
+  if(is.eof()) {
+    return decode_state::DECODE_EXPECTING;
+  } else {
+    *reinterpret_cast<uint64_t*>(&v) = to_native(*reinterpret_cast<uint64_t*>(&repr.t));
+    count  = 0; // reset to initial state
+    repr.t = 0; // reset to initial state
+    return decode_state::DECODE_SUCCESS;
+  }
+}
+
 decode_state read(std::istream& is, float32_t& v) {
   uint32_t t;
   if (expecting(is, sizeof(t))) {

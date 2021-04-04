@@ -49,6 +49,21 @@ BOOST_AUTO_TEST_CASE(uint32_t_test) {
   BOOST_TEST(s1 == s2);
 }
 
+BOOST_AUTO_TEST_CASE(float32_t_test) {
+  float32_t s1 = 2.71828f;
+  float32_t s2;
+  msg4r::number_parser<float32_t> parser;
+  std::stringstream ssm;
+  msg4r::write(ssm, s1);
+  parser(ssm, s2);
+  BOOST_TEST(s1 == s2);
+  s1 = 3.14159f;
+  ssm.str("");
+  msg4r::write(ssm, s1);
+  parser(ssm, s2);
+  BOOST_TEST(s1 == s2);
+}
+
 BOOST_AUTO_TEST_CASE(uint64_t_test) {
   uint64_t s1 = 0xdead;
   uint64_t s2;
@@ -58,6 +73,21 @@ BOOST_AUTO_TEST_CASE(uint64_t_test) {
   parser(ssm, s2);
   BOOST_TEST(s1 == s2);
   s1 = 0xcafe;
+  ssm.str("");
+  msg4r::write(ssm, s1);
+  parser(ssm, s2);
+  BOOST_TEST(s1 == s2);
+}
+
+BOOST_AUTO_TEST_CASE(float64_t_test) {
+  float64_t s1 = 2.71828;
+  float64_t s2;
+  msg4r::number_parser<float64_t> parser;
+  std::stringstream ssm;
+  msg4r::write(ssm, s1);
+  parser(ssm, s2);
+  BOOST_TEST(s1 == s2);
+  s1 = 3.14159;
   ssm.str("");
   msg4r::write(ssm, s1);
   parser(ssm, s2);
