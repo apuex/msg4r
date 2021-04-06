@@ -36,22 +36,33 @@ namespace msg4r {
 #define MSG4R_PACKED(n) __attribute__((packed))
 #endif
 
-#define BEGIN_STATE(state)      \
-  switch(state) {               \
-  case 0:
+#define BEGIN_STATE(state) switch(state) { case 0:
 
-#define HANDLE_STATE(op, s, v)  \
-  case __LINE__:                \
-    state = __LINE__; \
-    auto status = op(s, v);     \
-    if (decode_state::DECODE_SUCCESS != op(s, v)) return status;
+#define PARSE_STATE(state, op, s, v)  \
+  case __LINE__: /* fall through*/    \
+    {state = __LINE__;                \
+    auto status = op(s, v);           \
+    if (decode_state::DECODE_SUCCESS != status) return status;}
 
-#define END_STATE(t_, v) \
-  case __LINE__:         \
-    state = __LINE__;    \
-    v = t_;              \
-    return;              \
-  }
+#define PARSE_LIST_STATE(state, op, s, T, t_, add, length, index) \
+  case __LINE__: /* fall through*/                 \
+    state = __LINE__;                              \
+    for (index = 0; index != length;) {            \
+      T c;                                         \
+      auto status = op(s, c);                      \
+      if (decode_state::DECODE_SUCCESS != status) return status; \
+      index += 1;                                  \
+      t_.add(c);                                   \
+    }
+
+#define END_STATE(state, t_, v)          \
+  case __LINE__: /* fall through*/       \
+    state = __LINE__;                    \
+    v = t_;                              \
+    reset();                             \
+  }                                      \
+  return decode_state::DECODE_SUCCESS;   
+
 
 enum class encode_state {
   ENCODE_SUCCESS   = 0,
@@ -126,6 +137,8 @@ struct string_parser {
   MSG4R_SIZE_T length_;
   MSG4R_SIZE_T index_;
   std::string t_;
+  number_parser<MSG4R_SIZE_T> length_parser_;
+  number_parser<std::string::value_type> t_parser;
 };
 
 decode_state read(std::istream& is, std::string& v);
@@ -158,24 +171,48 @@ encode_state write(std::ostream& os, const T& v) {
   return encode_state::ENCODE_SUCCESS;
 }
 
-template<typename T>
-decode_state read(std::istream& is, std::vector<T>& v) {
-  MSG4R_SIZE_T length;
-  if (decode_state::DECODE_EXPECTING == read(is, length)) {
-    return decode_state::DECODE_EXPECTING;
-  }
+template<typename T, typename P>
+struct vector_parser {
+  vector_parser();
+  virtual ~vector_parser();
+  decode_state operator()(std::istream& is, std::vector<T>& v);
+  void reset();
 
-  if (expecting(is, length)) {
-    rollback(is, sizeof(length));
-    return decode_state::DECODE_EXPECTING;
-  }
+  int state_;
+  MSG4R_SIZE_T length_;
+  MSG4R_SIZE_T index_;
+  std::vector<T> t_;
+  number_parser<MSG4R_SIZE_T> length_parser_;
+  P t_parser_;
+};
 
-  for (MSG4R_SIZE_T i = 0; i != length; ++i) {
-    T c;
-    read(is, c);
-    v.push_back(c);
-  }
-  return decode_state::DECODE_SUCCESS;
+template <typename T, typename P>
+vector_parser<T, P>::vector_parser()
+    : state_(0),
+      length_(0),
+      index_(0),
+      t_(), length_parser_(), t_parser_() {}
+
+template <typename T, typename P>
+vector_parser<T, P>::~vector_parser() {}
+
+template <typename T, typename P>
+void vector_parser<T, P>::reset() {
+  state_ = 0;   // reset to initial state
+  length_ = 0;  // reset to initial state
+  index_ = 0;   // reset to initial state
+  t_.clear();   // reset to initial state
+  length_parser_.reset();
+  t_parser_.reset();
+}
+
+template <typename T, typename P>
+decode_state vector_parser<T, P>::operator()(std::istream& is, std::vector<T>& v) {
+  BEGIN_STATE(state_)
+  PARSE_STATE(state_, length_parser_, is, length_)
+  PARSE_LIST_STATE(state_, t_parser_, is, std::vector<T>::value_type, t_,
+                   push_back, length_, index_)
+  END_STATE(state_, t_, v)
 }
 
 template<typename T>

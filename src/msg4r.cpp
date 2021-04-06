@@ -60,14 +60,15 @@ encode_state write(std::ostream& os, const float64_t& v) {
 }
 
 string_parser::string_parser()
-    : state_(0),
-      length_(0),
-      index_(0), t_() { }
+    : state_(0), length_(0), index_(0), t_(), length_parser_(), t_parser() {}
 
 string_parser::~string_parser() { }
 
 decode_state string_parser::operator()(std::istream& is, std::string& v) {
-  return decode_state::DECODE_SUCCESS;
+  BEGIN_STATE(state_)
+  PARSE_STATE(state_, length_parser_, is, length_)
+  PARSE_LIST_STATE(state_, t_parser, is, std::string::value_type, t_, push_back, length_, index_)
+  END_STATE(state_, t_, v)
 }
 
 void string_parser::reset() {
@@ -75,6 +76,8 @@ void string_parser::reset() {
   length_ = 0; // reset to initial state
   index_ = 0;  // reset to initial state
   t_.clear();  // reset to initial state
+  length_parser_.reset();
+  t_parser.reset();
 }
 
 decode_state read(std::istream& is, std::string& v) {
