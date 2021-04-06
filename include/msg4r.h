@@ -210,8 +210,7 @@ template <typename T, typename P>
 decode_state vector_parser<T, P>::operator()(std::istream& is, std::vector<T>& v) {
   BEGIN_STATE(state_)
   PARSE_STATE(state_, length_parser_, is, length_)
-  PARSE_LIST_STATE(state_, t_parser_, is, std::vector<T>::value_type, t_,
-                   push_back, length_, index_)
+  PARSE_LIST_STATE(state_, t_parser_, is, std::vector<T>::value_type, t_, push_back, length_, index_)
   END_STATE(state_, t_, v)
 }
 
