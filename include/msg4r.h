@@ -62,13 +62,13 @@ struct number_parser {
   number_parser();
   virtual ~number_parser();
   decode_state operator()(std::istream& is, T& v);
+  void reset();
 
-  MSG4R_SIZE_T length; 
-  MSG4R_SIZE_T index; 
-  T t;
+  MSG4R_SIZE_T index_; 
+  T t_;
 };
 
-template<typename T> number_parser<T>::number_parser(): index(0), t() { }
+template<typename T> number_parser<T>::number_parser(): index_(0), t_() { }
 template<typename T> number_parser<T>::~number_parser() { }
 
 template<> decode_state number_parser<float32_t>::operator()(std::istream& is, float32_t& v);
@@ -77,24 +77,26 @@ template<> decode_state number_parser<float64_t>::operator()(std::istream& is, f
 template<typename T>
 decode_state number_parser<T>::operator()(std::istream& is, T& v) {
   auto initial = is.gcount();
-  is.read((char*)&t + index, sizeof(T));
+  is.read((char*)&t_ + index_, sizeof(T));
   auto current = is.gcount();
-  index += (current - initial);
+  index_ += (current - initial);
   if(is.eof()) {
     return decode_state::DECODE_EXPECTING;
   } else {
-    v = to_native(t);
-    length = 0; // reset to initial state
-    index  = 0; // reset to initial state
-    t      = 0; // reset to initial state
+    v = to_native(t_);
+    reset();
     return decode_state::DECODE_SUCCESS;
   }
 }
 
-decode_state read(std::istream& is, float32_t& v);
+template <typename T>
+void number_parser<T>::reset() {
+  index_ = 0;   // reset to initial state
+  t_ = 0;       // reset to initial state
+}
+
 encode_state write(std::ostream& os, const float32_t& v);
 
-decode_state read(std::istream& is, float64_t& v);
 encode_state write(std::ostream& os, const float64_t& v);
 
 decode_state read(std::istream& is, std::string& v);

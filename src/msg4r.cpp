@@ -17,41 +17,30 @@ void rollback(std::istream& is, MSG4R_SIZE_T size) {
 
 template<> decode_state number_parser<float32_t>::operator()(std::istream& is, float32_t& v) {
   auto initial = is.gcount();
-  is.read((char*)&t + index, sizeof(float32_t));
+  is.read((char*)&t_ + index_, sizeof(float32_t));
   auto current = is.gcount();
-  index += (current - initial);
+  index_ += (current - initial);
   if(is.eof()) {
     return decode_state::DECODE_EXPECTING;
   } else {
-    *reinterpret_cast<uint32_t*>(&v) = to_native(*reinterpret_cast<uint32_t*>(&t));
-    index  = 0; // reset to initial state
-    t      = 0; // reset to initial state
+    *reinterpret_cast<uint32_t*>(&v) = to_native(*reinterpret_cast<uint32_t*>(&t_));
+    index_  = 0; // reset to initial state
+    t_      = 0; // reset to initial state
     return decode_state::DECODE_SUCCESS;
   }
 }
 
 template<> decode_state number_parser<float64_t>::operator()(std::istream& is, float64_t& v) {
   auto initial = is.gcount();
-  is.read((char*)&t + index, sizeof(float64_t));
+  is.read((char*)&t_ + index_, sizeof(float64_t));
   auto current = is.gcount();
-  index += (current - initial);
+  index_ += (current - initial);
   if(is.eof()) {
     return decode_state::DECODE_EXPECTING;
   } else {
-    *reinterpret_cast<uint64_t*>(&v) = to_native(*reinterpret_cast<uint64_t*>(&t));
-    index  = 0; // reset to initial state
-    t      = 0; // reset to initial state
-    return decode_state::DECODE_SUCCESS;
-  }
-}
-
-decode_state read(std::istream& is, float32_t& v) {
-  uint32_t t;
-  if (expecting(is, sizeof(t))) {
-    return decode_state::DECODE_EXPECTING;
-  } else {
-    is.read((char*)&t, sizeof(t));
-    *reinterpret_cast<uint32_t*>(&v) = to_native(t);
+    *reinterpret_cast<uint64_t*>(&v) = to_native(*reinterpret_cast<uint64_t*>(&t_));
+    index_  = 0; // reset to initial state
+    t_      = 0; // reset to initial state
     return decode_state::DECODE_SUCCESS;
   }
 }
@@ -61,17 +50,6 @@ encode_state write(std::ostream& os, const float32_t& v) {
   t = from_native(*reinterpret_cast<const uint32_t*>(&v));
   os.write((char*)&t, sizeof(t));
   return encode_state::ENCODE_SUCCESS;
-}
-
-decode_state read(std::istream& is, float64_t& v) {
-  uint64_t t;
-  if (expecting(is, sizeof(t))) {
-    return decode_state::DECODE_EXPECTING;
-  } else {
-    is.read((char*)&t, sizeof(t));
-    *reinterpret_cast<uint64_t*>(&v) = to_native(t);
-    return decode_state::DECODE_SUCCESS;
-  }
 }
 
 encode_state write(std::ostream& os, const float64_t& v) {
