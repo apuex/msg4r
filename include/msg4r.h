@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 #include <tuple>
+#include <utility>
 #include <vector>
 #include <boost/endian/arithmetic.hpp>
 #include <boost/endian/conversion.hpp>
@@ -327,26 +328,91 @@ encode_state write(std::ostream& os, const std::set<T>& v) {
   return encode_state::ENCODE_SUCCESS;
 }
 
+template<typename K, typename KP, typename V, typename VP>
+struct pair_parser {
+  pair_parser();
+  virtual ~pair_parser();
+  decode_state operator()(std::istream& is, std::pair<K, V>& v);
+  void reset();
+
+  int state_;
+  K k_;
+  V v_;
+  KP k_parser_;
+  VP v_parser_;
+};
+
+template<typename K, typename KP, typename V, typename VP>
+pair_parser<K, KP, V, VP>::pair_parser()
+    : state_(0),
+      k_(), v_(), k_parser_(), v_parser_() {}
+
+template<typename K, typename KP, typename V, typename VP>
+pair_parser<K, KP, V, VP>::~pair_parser() {}
+
+template<typename K, typename KP, typename V, typename VP>
+void pair_parser<K, KP, V, VP>::reset() {
+  state_ = 0;   // reset to initial state
+  k_parser_.reset();
+  v_parser_.reset();
+}
+
+template<typename K, typename KP, typename V, typename VP>
+decode_state pair_parser<K, KP, V, VP>::operator()(std::istream& is, std::pair<K, V>& v) {
+  BEGIN_STATE(state_)
+  PARSE_STATE(state_, k_parser_, is, k_)
+  PARSE_STATE(state_, v_parser_, is, v_)
+  END_STATE(state_, std::make_pair(k_, v_), v)
+}
+
 template<typename K, typename V>
-decode_state read(std::istream& is, std::map<K, V>& v) {
-  MSG4R_SIZE_T length;
-  if (decode_state::DECODE_EXPECTING == read(is, length)) {
-    return decode_state::DECODE_EXPECTING;
-  }
+encode_state write(std::ostream& os, const std::pair<K, V>& v) {
+  write(os, v.first);
+  write(os, v.second);
+  return encode_state::ENCODE_SUCCESS;
+}
 
-  if (expecting(is, length)) {
-    rollback(is, sizeof(length));
-    return decode_state::DECODE_EXPECTING;
-  }
+template<typename K, typename KP, typename V, typename VP>
+struct map_parser {
+  typedef std::pair<K, V> E;
+  typedef pair_parser<K, KP, V, VP> P;
+  map_parser();
+  virtual ~map_parser();
+  decode_state operator()(std::istream& is, std::map<K, V>& v);
+  void reset();
 
-  for (MSG4R_SIZE_T i = 0; i != length; ++i) {
-    K key;
-    V value;
-    read(is, key);
-    read(is, value);
-    v.insert(std::make_pair(key, value));
-  }
-  return decode_state::DECODE_SUCCESS;
+  int state_;
+  MSG4R_SIZE_T length_;
+  MSG4R_SIZE_T index_;
+  std::map<K, V> t_;
+  number_parser<MSG4R_SIZE_T> length_parser_;
+  P t_parser_;
+};
+
+template<typename K, typename KP, typename V, typename VP>
+map_parser<K, KP, V, VP>::map_parser()
+    : state_(0), length_(0), index_(0), t_(), length_parser_(), t_parser_() {}
+
+template<typename K, typename KP, typename V, typename VP>
+map_parser<K, KP, V, VP>::~map_parser() {}
+
+template<typename K, typename KP, typename V, typename VP>
+void map_parser<K, KP, V, VP>::reset() {
+  state_ = 0;   // reset to initial state
+  length_ = 0;  // reset to initial state
+  index_ = 0;   // reset to initial state
+  t_.clear();   // reset to initial state
+  length_parser_.reset();
+  t_parser_.reset();
+}
+
+template<typename K, typename KP, typename V, typename VP>
+decode_state map_parser<K, KP, V, VP>::operator()(std::istream& is, std::map<K, V>& v) {
+  BEGIN_STATE(state_)
+  PARSE_STATE(state_, length_parser_, is, length_)
+  PARSE_LIST_STATE(state_, t_parser_, is, E, t_,
+                   insert, length_, index_)
+  END_STATE(state_, t_, v)
 }
 
 template<typename K, typename V>
@@ -362,10 +428,18 @@ encode_state write(std::ostream& os, const std::map<K, V>& v) {
 
 template<typename K, typename V>
 std::ostream& operator<<(std::ostream& os,
+                         const std::pair<K, V>& t) {
+  os << t.first << ": " << t.second;
+  return os;
+}
+
+template<typename K, typename V>
+std::ostream& operator<<(std::ostream& os,
                          const std::map<K, V>& t) {
   os << "std::map { ";
   for(auto e = t.begin(); e != t.end();) {
-    os << e->first << ": " << e->second;
+    os << *e;
+    //os << e->first << ": " << e->second;
     e++;
     if(e != t.end()) os << ", ";
   }
@@ -423,5 +497,13 @@ void print_bytes(std::ostream& os, T& str) {
 }
 
 void print_bytes(std::ostream& os, const char* buff, const size_t length);
+
+/*
+template<typename K, typename V>
+constexpr bool operator==(const std::pair<K, V>& lhs,
+                         const std::pair<K, V>& rhs) {
+  return std::tie(lhs.first, lhs.second) == std::tie(rhs.first, rhs.second);
+}
+*/
 
 }

@@ -93,6 +93,10 @@ SET(MSG4R_NUMBER_PARSER_TEST_SRCS
   test/msg4r-number-parser-test.cpp
 )
 
+SET(MSG4R_PAIR_TEST_SRCS
+  test/msg4r-pair-test.cpp
+)
+
 SET(MSG4R_POC_INT_TEST_SRCS
   test/msg4r-poc-int-test.cpp
 )
@@ -201,6 +205,14 @@ if(UNIX)
 set_target_properties(msg4r-number-parser-test PROPERTIES LINK_FLAGS_RELEASE -s)
 endif()
 ADD_TEST(NAME msg4r-number-parser-test COMMAND msg4r-number-parser-test)
+
+ADD_EXECUTABLE(msg4r-pair-test ${MSG4R_PAIR_TEST_SRCS})
+target_include_directories(msg4r-pair-test PRIVATE ${Boost_INCLUDE_DIRS})
+target_link_libraries(msg4r-pair-test msg4r ${Boost_LIBRARIES} ${Boost_unit_test_framework})
+if(UNIX)
+set_target_properties(msg4r-pair-test PROPERTIES LINK_FLAGS_RELEASE -s)
+endif()
+ADD_TEST(NAME msg4r-pair-test COMMAND msg4r-pair-test)
 
 ADD_EXECUTABLE(msg4r-poc-int-test ${MSG4R_POC_INT_TEST_SRCS})
 target_include_directories(msg4r-poc-int-test PRIVATE ${Boost_INCLUDE_DIRS})
