@@ -47,9 +47,8 @@ std::istream& read(std::istream& is, struct1_t& v) {
   msg4r::string_parser string_parser;
   msg4r::number_parser<float32_t> float32_parser;
   msg4r::number_parser<float64_t> float64_parser;
-  msg4r::map_parser<std::string,
+  msg4r::map_parser<
                     msg4r::string_parser,
-                    std::string,
                     msg4r::string_parser
                    > map_parser;
   msg4r::read(is, v.version);

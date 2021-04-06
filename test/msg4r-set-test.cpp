@@ -7,7 +7,7 @@
 using namespace msg4r;
 
 BOOST_AUTO_TEST_CASE(string_test) {
-  msg4r::set_parser<uint16_t, msg4r::number_parser<uint16_t> > parse;
+  msg4r::set_parser<msg4r::number_parser<uint16_t> > parse;
   std::set<uint16_t> s1 = {0xcafe, 0xbeef};
   std::set<uint16_t> s2;
   std::stringstream ssm;

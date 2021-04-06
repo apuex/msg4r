@@ -8,9 +8,8 @@ using namespace std;
 using namespace msg4r;
 
 BOOST_AUTO_TEST_CASE(string_string_test) {
-  msg4r::pair_parser<std::string, 
+  msg4r::pair_parser<
                      msg4r::string_parser,
-                     std::string,
                      msg4r::string_parser
                      > parse;
   std::pair<std::string, std::string> s1 = {"hello", "world"};
@@ -31,9 +30,8 @@ BOOST_AUTO_TEST_CASE(string_string_test) {
 }
 
 BOOST_AUTO_TEST_CASE(uint16_string_test) {
-  msg4r::pair_parser<uint16_t, 
+  msg4r::pair_parser<
                      msg4r::number_parser<uint16_t>,
-                     std::string,
                      msg4r::string_parser
                      > parse;
   std::pair<uint16_t, std::string> s1 = {0xcafe, "hello"};

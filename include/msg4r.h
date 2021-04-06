@@ -88,6 +88,7 @@ void rollback(std::istream& is, MSG4R_SIZE_T size);
 
 template <typename T>
 struct number_parser {
+  typedef T value_type;
   number_parser();
   virtual ~number_parser();
   decode_state operator()(std::istream& is, T& v);
@@ -129,6 +130,7 @@ encode_state write(std::ostream& os, const float32_t& v);
 encode_state write(std::ostream& os, const float64_t& v);
 
 struct string_parser {
+  typedef std::string value_type;
   string_parser();
   virtual ~string_parser();
   decode_state operator()(std::istream& is, std::string& v);
@@ -172,33 +174,35 @@ encode_state write(std::ostream& os, const T& v) {
   return encode_state::ENCODE_SUCCESS;
 }
 
-template<typename T, typename P>
+template<typename ParserType>
 struct vector_parser {
+  typedef typename ParserType::value_type element_type;
+  typedef std::vector<element_type> value_type;
   vector_parser();
   virtual ~vector_parser();
-  decode_state operator()(std::istream& is, std::vector<T>& v);
+  decode_state operator()(std::istream& is, std::vector<element_type>& v);
   void reset();
 
   int state_;
   MSG4R_SIZE_T length_;
   MSG4R_SIZE_T index_;
-  std::vector<T> t_;
+  std::vector<element_type> t_;
   number_parser<MSG4R_SIZE_T> length_parser_;
-  P t_parser_;
+  ParserType t_parser_;
 };
 
-template <typename T, typename P>
-vector_parser<T, P>::vector_parser()
+template<typename ParserType>
+vector_parser<ParserType>::vector_parser()
     : state_(0),
       length_(0),
       index_(0),
       t_(), length_parser_(), t_parser_() {}
 
-template <typename T, typename P>
-vector_parser<T, P>::~vector_parser() {}
+template<typename ParserType>
+vector_parser<ParserType>::~vector_parser() {}
 
-template <typename T, typename P>
-void vector_parser<T, P>::reset() {
+template <typename ParserType>
+void vector_parser<ParserType>::reset() {
   state_ = 0;   // reset to initial state
   length_ = 0;  // reset to initial state
   index_ = 0;   // reset to initial state
@@ -207,11 +211,11 @@ void vector_parser<T, P>::reset() {
   t_parser_.reset();
 }
 
-template <typename T, typename P>
-decode_state vector_parser<T, P>::operator()(std::istream& is, std::vector<T>& v) {
+template <typename ParserType>
+decode_state vector_parser<ParserType>::operator()(std::istream& is, std::vector<element_type>& v) {
   BEGIN_STATE(state_)
   PARSE_STATE(state_, length_parser_, is, length_)
-  PARSE_LIST_STATE(state_, t_parser_, is, typename std::vector<T>::value_type, t_, push_back, length_, index_)
+  PARSE_LIST_STATE(state_, t_parser_, is, element_type, t_, push_back, length_, index_)
   END_STATE(state_, t_, v)
 }
 
@@ -225,30 +229,32 @@ encode_state write(std::ostream& os, const std::vector<T>& v) {
   return encode_state::ENCODE_SUCCESS;
 }
 
-template <typename T, typename P>
+template <typename ParserType>
 struct list_parser {
+  typedef typename ParserType::value_type element_type;
+  typedef std::list<element_type> value_type;
   list_parser();
   virtual ~list_parser();
-  decode_state operator()(std::istream& is, std::list<T>& v);
+  decode_state operator()(std::istream& is, value_type& v);
   void reset();
 
   int state_;
   MSG4R_SIZE_T length_;
   MSG4R_SIZE_T index_;
-  std::list<T> t_;
+  value_type t_;
   number_parser<MSG4R_SIZE_T> length_parser_;
-  P t_parser_;
+  ParserType t_parser_;
 };
 
-template <typename T, typename P>
-list_parser<T, P>::list_parser()
+template <typename ParserType>
+list_parser<ParserType>::list_parser()
     : state_(0), length_(0), index_(0), t_(), length_parser_(), t_parser_() {}
 
-template <typename T, typename P>
-list_parser<T, P>::~list_parser() {}
+template <typename ParserType>
+list_parser<ParserType>::~list_parser() {}
 
-template <typename T, typename P>
-void list_parser<T, P>::reset() {
+template <typename ParserType>
+void list_parser<ParserType>::reset() {
   state_ = 0;   // reset to initial state
   length_ = 0;  // reset to initial state
   index_ = 0;   // reset to initial state
@@ -257,12 +263,12 @@ void list_parser<T, P>::reset() {
   t_parser_.reset();
 }
 
-template <typename T, typename P>
-decode_state list_parser<T, P>::operator()(std::istream& is,
-                                             std::list<T>& v) {
+template <typename ParserType>
+decode_state list_parser<ParserType>::operator()(std::istream& is,
+                                             value_type& v) {
   BEGIN_STATE(state_)
   PARSE_STATE(state_, length_parser_, is, length_)
-  PARSE_LIST_STATE(state_, t_parser_, is, typename std::list<T>::value_type, t_,
+  PARSE_LIST_STATE(state_, t_parser_, is, element_type, t_,
                    push_back, length_, index_)
   END_STATE(state_, t_, v)
 }
@@ -277,30 +283,32 @@ encode_state write(std::ostream& os, const std::list<T>& v) {
   return encode_state::ENCODE_SUCCESS;
 }
 
-template <typename T, typename P>
+template <typename ParserType>
 struct set_parser {
+  typedef typename ParserType::value_type element_type;
+  typedef std::set<element_type> value_type;
   set_parser();
   virtual ~set_parser();
-  decode_state operator()(std::istream& is, std::set<T>& v);
+  decode_state operator()(std::istream& is, value_type& v);
   void reset();
 
   int state_;
   MSG4R_SIZE_T length_;
   MSG4R_SIZE_T index_;
-  std::set<T> t_;
+  value_type t_;
   number_parser<MSG4R_SIZE_T> length_parser_;
-  P t_parser_;
+  ParserType t_parser_;
 };
 
-template <typename T, typename P>
-set_parser<T, P>::set_parser()
+template <typename ParserType>
+set_parser<ParserType>::set_parser()
     : state_(0), length_(0), index_(0), t_(), length_parser_(), t_parser_() {}
 
-template <typename T, typename P>
-set_parser<T, P>::~set_parser() {}
+template <typename ParserType>
+set_parser<ParserType>::~set_parser() {}
 
-template <typename T, typename P>
-void set_parser<T, P>::reset() {
+template <typename ParserType>
+void set_parser<ParserType>::reset() {
   state_ = 0;   // reset to initial state
   length_ = 0;  // reset to initial state
   index_ = 0;   // reset to initial state
@@ -309,11 +317,11 @@ void set_parser<T, P>::reset() {
   t_parser_.reset();
 }
 
-template <typename T, typename P>
-decode_state set_parser<T, P>::operator()(std::istream& is, std::set<T>& v) {
+template <typename ParserType>
+decode_state set_parser<ParserType>::operator()(std::istream& is, value_type& v) {
   BEGIN_STATE(state_)
   PARSE_STATE(state_, length_parser_, is, length_)
-  PARSE_LIST_STATE(state_, t_parser_, is, typename std::set<T>::value_type, t_,
+  PARSE_LIST_STATE(state_, t_parser_, is, element_type, t_,
                    insert, length_, index_)
   END_STATE(state_, t_, v)
 }
@@ -328,37 +336,40 @@ encode_state write(std::ostream& os, const std::set<T>& v) {
   return encode_state::ENCODE_SUCCESS;
 }
 
-template<typename K, typename KP, typename V, typename VP>
+template<typename KParserType, typename VParserType>
 struct pair_parser {
+  typedef typename KParserType::value_type first_type;
+  typedef typename VParserType::value_type second_type;
+  typedef std::pair<first_type, second_type> value_type;
   pair_parser();
   virtual ~pair_parser();
-  decode_state operator()(std::istream& is, std::pair<K, V>& v);
+  decode_state operator()(std::istream& is, value_type& v);
   void reset();
 
   int state_;
-  K k_;
-  V v_;
-  KP k_parser_;
-  VP v_parser_;
+  first_type k_;
+  second_type v_;
+  KParserType k_parser_;
+  VParserType v_parser_;
 };
 
-template<typename K, typename KP, typename V, typename VP>
-pair_parser<K, KP, V, VP>::pair_parser()
+template<typename KParserType, typename VParserType>
+pair_parser<KParserType, VParserType>::pair_parser()
     : state_(0),
       k_(), v_(), k_parser_(), v_parser_() {}
 
-template<typename K, typename KP, typename V, typename VP>
-pair_parser<K, KP, V, VP>::~pair_parser() {}
+template<typename KParserType, typename VParserType>
+pair_parser<KParserType, VParserType>::~pair_parser() {}
 
-template<typename K, typename KP, typename V, typename VP>
-void pair_parser<K, KP, V, VP>::reset() {
+template<typename KParserType, typename VParserType>
+void pair_parser<KParserType, VParserType>::reset() {
   state_ = 0;   // reset to initial state
   k_parser_.reset();
   v_parser_.reset();
 }
 
-template<typename K, typename KP, typename V, typename VP>
-decode_state pair_parser<K, KP, V, VP>::operator()(std::istream& is, std::pair<K, V>& v) {
+template<typename KParserType, typename VParserType>
+decode_state pair_parser<KParserType, VParserType>::operator()(std::istream& is, value_type& v) {
   BEGIN_STATE(state_)
   PARSE_STATE(state_, k_parser_, is, k_)
   PARSE_STATE(state_, v_parser_, is, v_)
@@ -372,32 +383,35 @@ encode_state write(std::ostream& os, const std::pair<K, V>& v) {
   return encode_state::ENCODE_SUCCESS;
 }
 
-template<typename K, typename KP, typename V, typename VP>
+template<typename KParserType, typename VParserType>
 struct map_parser {
-  typedef std::pair<K, V> E;
-  typedef pair_parser<K, KP, V, VP> P;
+  typedef typename KParserType::value_type first_type;
+  typedef typename VParserType::value_type second_type;
+  typedef std::pair<first_type, second_type> element_type;
+  typedef std::map<first_type, second_type> value_type;
+  typedef pair_parser<KParserType, VParserType> ParserType;
   map_parser();
   virtual ~map_parser();
-  decode_state operator()(std::istream& is, std::map<K, V>& v);
+  decode_state operator()(std::istream& is, value_type& v);
   void reset();
 
   int state_;
   MSG4R_SIZE_T length_;
   MSG4R_SIZE_T index_;
-  std::map<K, V> t_;
+  value_type t_;
   number_parser<MSG4R_SIZE_T> length_parser_;
-  P t_parser_;
+  ParserType t_parser_;
 };
 
-template<typename K, typename KP, typename V, typename VP>
-map_parser<K, KP, V, VP>::map_parser()
+template<typename KParserType, typename VParserType>
+map_parser<KParserType, VParserType>::map_parser()
     : state_(0), length_(0), index_(0), t_(), length_parser_(), t_parser_() {}
 
-template<typename K, typename KP, typename V, typename VP>
-map_parser<K, KP, V, VP>::~map_parser() {}
+template<typename KParserType, typename VParserType>
+map_parser<KParserType, VParserType>::~map_parser() {}
 
-template<typename K, typename KP, typename V, typename VP>
-void map_parser<K, KP, V, VP>::reset() {
+template<typename KParserType, typename VParserType>
+void map_parser<KParserType, VParserType>::reset() {
   state_ = 0;   // reset to initial state
   length_ = 0;  // reset to initial state
   index_ = 0;   // reset to initial state
@@ -406,11 +420,11 @@ void map_parser<K, KP, V, VP>::reset() {
   t_parser_.reset();
 }
 
-template<typename K, typename KP, typename V, typename VP>
-decode_state map_parser<K, KP, V, VP>::operator()(std::istream& is, std::map<K, V>& v) {
+template<typename KParserType, typename VParserType>
+decode_state map_parser<KParserType, VParserType>::operator()(std::istream& is, value_type& v) {
   BEGIN_STATE(state_)
   PARSE_STATE(state_, length_parser_, is, length_)
-  PARSE_LIST_STATE(state_, t_parser_, is, E, t_,
+  PARSE_LIST_STATE(state_, t_parser_, is, element_type, t_,
                    insert, length_, index_)
   END_STATE(state_, t_, v)
 }
@@ -439,7 +453,6 @@ std::ostream& operator<<(std::ostream& os,
   os << "std::map { ";
   for(auto e = t.begin(); e != t.end();) {
     os << *e;
-    //os << e->first << ": " << e->second;
     e++;
     if(e != t.end()) os << ", ";
   }

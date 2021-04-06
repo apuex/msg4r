@@ -7,9 +7,8 @@
 using namespace msg4r;
 
 BOOST_AUTO_TEST_CASE(string_test) {
-  msg4r::map_parser<std::string,
+  msg4r::map_parser<
                     msg4r::string_parser,
-                    std::string,
                     msg4r::string_parser
                    > parse;
   std::map<std::string, std::string> s1 = { {"hello", "world"}, {"bob", "alice"} };
@@ -33,9 +32,8 @@ BOOST_AUTO_TEST_CASE(string_test) {
 }
 
 BOOST_AUTO_TEST_CASE(uint16_test) {
-  msg4r::map_parser<uint16_t,
+  msg4r::map_parser<
                     msg4r::number_parser<uint16_t>,
-                    uint16_t,
                     msg4r::number_parser<uint16_t>
                    > parse;
   std::map<uint16_t, uint16_t> s1 = { {0xcafe, 0xbeef} };
@@ -59,9 +57,8 @@ BOOST_AUTO_TEST_CASE(uint16_test) {
 }
 
 BOOST_AUTO_TEST_CASE(uint32_test) {
-  msg4r::map_parser<uint32_t,
+  msg4r::map_parser<
                     msg4r::number_parser<uint32_t>,
-                    uint32_t,
                     msg4r::number_parser<uint32_t>
                    > parse;
   std::map<uint32_t, uint32_t> s1 = { {0xcafe, 0xbeef} };
