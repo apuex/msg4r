@@ -276,24 +276,45 @@ encode_state write(std::ostream& os, const std::list<T>& v) {
   return encode_state::ENCODE_SUCCESS;
 }
 
-template<typename T>
-decode_state read(std::istream& is, std::set<T>& v) {
-  MSG4R_SIZE_T length;
-  if (decode_state::DECODE_EXPECTING == read(is, length)) {
-    return decode_state::DECODE_EXPECTING;
-  }
+template <typename T, typename P>
+struct set_parser {
+  set_parser();
+  virtual ~set_parser();
+  decode_state operator()(std::istream& is, std::set<T>& v);
+  void reset();
 
-  if (expecting(is, length)) {
-    rollback(is, sizeof(length));
-    return decode_state::DECODE_EXPECTING;
-  }
+  int state_;
+  MSG4R_SIZE_T length_;
+  MSG4R_SIZE_T index_;
+  std::set<T> t_;
+  number_parser<MSG4R_SIZE_T> length_parser_;
+  P t_parser_;
+};
 
-  for (MSG4R_SIZE_T i = 0; i != length; ++i) {
-    T c;
-    read(is, c);
-    v.insert(c);
-  }
-  return decode_state::DECODE_SUCCESS;
+template <typename T, typename P>
+set_parser<T, P>::set_parser()
+    : state_(0), length_(0), index_(0), t_(), length_parser_(), t_parser_() {}
+
+template <typename T, typename P>
+set_parser<T, P>::~set_parser() {}
+
+template <typename T, typename P>
+void set_parser<T, P>::reset() {
+  state_ = 0;   // reset to initial state
+  length_ = 0;  // reset to initial state
+  index_ = 0;   // reset to initial state
+  t_.clear();   // reset to initial state
+  length_parser_.reset();
+  t_parser_.reset();
+}
+
+template <typename T, typename P>
+decode_state set_parser<T, P>::operator()(std::istream& is, std::set<T>& v) {
+  BEGIN_STATE(state_)
+  PARSE_STATE(state_, length_parser_, is, length_)
+  PARSE_LIST_STATE(state_, t_parser_, is, typename std::set<T>::value_type, t_,
+                   insert, length_, index_)
+  END_STATE(state_, t_, v)
 }
 
 template<typename T>
