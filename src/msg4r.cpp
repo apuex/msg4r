@@ -59,6 +59,24 @@ encode_state write(std::ostream& os, const float64_t& v) {
   return encode_state::ENCODE_SUCCESS;
 }
 
+string_parser::string_parser()
+    : state_(0),
+      length_(0),
+      index_(0), t_() { }
+
+string_parser::~string_parser() { }
+
+decode_state string_parser::operator()(std::istream& is, std::string& v) {
+  return decode_state::DECODE_SUCCESS;
+}
+
+void string_parser::reset() {
+  state_ = 0;  // reset to initial state
+  length_ = 0; // reset to initial state
+  index_ = 0;  // reset to initial state
+  t_.clear();  // reset to initial state
+}
+
 decode_state read(std::istream& is, std::string& v) {
   MSG4R_SIZE_T length;
   if (decode_state::DECODE_EXPECTING == read(is, length)) {

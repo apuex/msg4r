@@ -36,6 +36,23 @@ namespace msg4r {
 #define MSG4R_PACKED(n) __attribute__((packed))
 #endif
 
+#define BEGIN_STATE(state)      \
+  switch(state) {               \
+  case 0:
+
+#define HANDLE_STATE(op, s, v)  \
+  case __LINE__:                \
+    state = __LINE__; \
+    auto status = op(s, v);     \
+    if (decode_state::DECODE_SUCCESS != op(s, v)) return status;
+
+#define END_STATE(t_, v) \
+  case __LINE__:         \
+    state = __LINE__;    \
+    v = t_;              \
+    return;              \
+  }
+
 enum class encode_state {
   ENCODE_SUCCESS   = 0,
   ENCODE_WAITING   = 1,
@@ -98,6 +115,18 @@ void number_parser<T>::reset() {
 encode_state write(std::ostream& os, const float32_t& v);
 
 encode_state write(std::ostream& os, const float64_t& v);
+
+struct string_parser {
+  string_parser();
+  virtual ~string_parser();
+  decode_state operator()(std::istream& is, std::string& v);
+  void reset();
+
+  int state_;
+  MSG4R_SIZE_T length_;
+  MSG4R_SIZE_T index_;
+  std::string t_;
+};
 
 decode_state read(std::istream& is, std::string& v);
 encode_state write(std::ostream& os, const std::string& v);
