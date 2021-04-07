@@ -37,6 +37,28 @@ namespace msg4r {
 #define MSG4R_PACKED(n) __attribute__((packed))
 #endif
 
+#define BEGIN_PARSER()      \
+  decode_state field_state; \
+  switch (state_) {         \
+  case 0:                   
+
+#define PARSE_FIELD(parser, stream, field)           \
+  case __LINE__:                                     \
+    state_ = __LINE__;                               \
+    field_state = parser(stream, field);             \
+    if (decode_state::DECODE_SUCCESS != field_state) \
+      return field_state;                            \
+    state_ += 1;
+
+#define END_PARSER()                     \
+  case __LINE__:                         \
+    state_ = __LINE__;                   \
+    reset();                             \
+    return decode_state::DECODE_SUCCESS; \
+  default:                               \
+    return decode_state::DECODE_FAILURE; \
+  }
+
 #define BEGIN_STATE(state) switch(state) { case 0:
 
 #define PARSE_STATE(state, op, s, v)  \
