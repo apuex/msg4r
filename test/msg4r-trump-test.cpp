@@ -154,15 +154,15 @@ BOOST_AUTO_TEST_CASE(struct1_test) {
 
   state = parse_struct1(segment1, s2);
   std::cout << "parse segment 1 => " << state << std::endl; 
-  BOOST_TEST(decode_state::DECODE_EXPECTING == state);
+  BOOST_TEST(decode_state::DECODE_INPROGRESS == state);
   
   state = parse_struct1(segment2, s2);
   std::cout << "parse segment 2 => " << state << std::endl; 
-  BOOST_TEST(decode_state::DECODE_EXPECTING == state);
+  BOOST_TEST(decode_state::DECODE_INPROGRESS == state);
   
   state = parse_struct1(segment3, s2);
   std::cout << "parse segment 3 => " << state << std::endl; 
-  BOOST_TEST(decode_state::DECODE_EXPECTING == state);
+  BOOST_TEST(decode_state::DECODE_INPROGRESS == state);
   
   state = parse_struct1(segment4, s2);
   std::cout << "parse segment 4 => " << state << std::endl; 

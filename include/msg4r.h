@@ -94,7 +94,7 @@ enum class encode_state {
 
 enum class decode_state {
   DECODE_SUCCESS   = 0,
-  DECODE_EXPECTING = 1,
+  DECODE_INPROGRESS = 1,
   DECODE_FAILURE   = 2
 };
 
@@ -122,13 +122,13 @@ template<> decode_state number_parser<float64_t>::operator()(std::istream& is, f
 template<typename T>
 decode_state number_parser<T>::operator()(std::istream& is, T& v) {
   auto initial = is.tellg();
-  if(-1 == initial) return decode_state::DECODE_EXPECTING;
+  if(-1 == initial) return decode_state::DECODE_INPROGRESS;
   is.read((char*)&t_ + index_, sizeof(T));
   auto current = is.tellg();
-  if(-1 == current) return decode_state::DECODE_EXPECTING;
+  if(-1 == current) return decode_state::DECODE_INPROGRESS;
   index_ += (current - initial);
   if(index_ != sizeof(T)) {
-    return decode_state::DECODE_EXPECTING;
+    return decode_state::DECODE_INPROGRESS;
   } else {
     v = to_native(t_);
     reset();

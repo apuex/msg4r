@@ -4,13 +4,13 @@ namespace msg4r {
 
 template<> decode_state number_parser<float32_t>::operator()(std::istream& is, float32_t& v) {
   auto initial = is.tellg();
-  if(-1 == initial) return decode_state::DECODE_EXPECTING;
+  if(-1 == initial) return decode_state::DECODE_INPROGRESS;
   is.read((char*)&t_ + index_, sizeof(float32_t));
   auto current = is.tellg();
-  if(-1 == current) return decode_state::DECODE_EXPECTING;
+  if(-1 == current) return decode_state::DECODE_INPROGRESS;
   index_ += (current - initial);
   if(index_ != sizeof(float32_t)) {
-    return decode_state::DECODE_EXPECTING;
+    return decode_state::DECODE_INPROGRESS;
   } else {
     *reinterpret_cast<uint32_t*>(&v) = to_native(*reinterpret_cast<uint32_t*>(&t_));
     index_  = 0; // reset to initial state
@@ -21,13 +21,13 @@ template<> decode_state number_parser<float32_t>::operator()(std::istream& is, f
 
 template<> decode_state number_parser<float64_t>::operator()(std::istream& is, float64_t& v) {
   auto initial = is.tellg();
-  if(-1 == initial) return decode_state::DECODE_EXPECTING;
+  if(-1 == initial) return decode_state::DECODE_INPROGRESS;
   is.read((char*)&t_ + index_, sizeof(float64_t));
   auto current = is.tellg();
-  if(-1 == current) return decode_state::DECODE_EXPECTING;
+  if(-1 == current) return decode_state::DECODE_INPROGRESS;
   index_ += (current - initial);
   if(index_ != sizeof(float64_t)) {
-    return decode_state::DECODE_EXPECTING;
+    return decode_state::DECODE_INPROGRESS;
   } else {
     *reinterpret_cast<uint64_t*>(&v) = to_native(*reinterpret_cast<uint64_t*>(&t_));
     index_  = 0; // reset to initial state
@@ -100,8 +100,8 @@ std::ostream& operator<<(std::ostream& os, const decode_state& t) {
     case decode_state::DECODE_SUCCESS:
       os << "DECODE_SUCCESS";
       break;
-    case decode_state::DECODE_EXPECTING:
-      os << "DECODE_EXPECTING";
+    case decode_state::DECODE_INPROGRESS:
+      os << "DECODE_INPROGRESS";
       break;
     case decode_state::DECODE_FAILURE:
       os << "DECODE_FAILURE";
