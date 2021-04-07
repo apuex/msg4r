@@ -50,49 +50,13 @@ typedef struct struct1_parser {
 
 decode_state struct1_parser::operator()(std::istream& is, value_type& v) {
   BEGIN_PARSER()
-  PARSE_FIELD(parse_string_, is, v.name)
-  PARSE_FIELD(parse_float32_, is, v.salary)
-  PARSE_FIELD(parse_float64_, is, v.capital)
-  PARSE_FIELD(parse_string_, is, v.title)
-  PARSE_FIELD(parse_string_string_map_, is, v.props)
+    PARSE_FIELD(parse_string_, is, v.name)
+    PARSE_FIELD(parse_float32_, is, v.salary)
+    PARSE_FIELD(parse_float64_, is, v.capital)
+    PARSE_FIELD(parse_string_, is, v.title)
+    PARSE_FIELD(parse_string_string_map_, is, v.props)
   END_PARSER()
 }
-
-/*
-decode_state struct1_parser::operator()(std::istream& is, value_type& v) {
-  decode_state field_state;
-  // duplicated case pattern can be replaced by 
-  // list iteration or macro
-  // to be declarative instead of instruction procedures.
-  switch (state_) { 
-  case 0:
-    field_state = parse_string_(is, v.name);
-    if (decode_state::DECODE_SUCCESS != field_state) return field_state;
-    state_ += 1;
-  case 1:
-    field_state = parse_float32_(is, v.salary);
-    if (decode_state::DECODE_SUCCESS != field_state) return field_state;
-    state_ += 1;
-  case 2:
-    field_state = parse_float64_(is, v.capital);
-    if (decode_state::DECODE_SUCCESS != field_state) return field_state;
-    state_ += 1;
-  case 3:
-    field_state = parse_string_(is, v.title);
-    if (decode_state::DECODE_SUCCESS != field_state) return field_state;
-    state_ += 1;
-  case 4:
-    field_state = parse_string_string_map_(is, v.props);
-    if (decode_state::DECODE_SUCCESS != field_state) return field_state;
-    state_ += 1;
-  case 5:
-    reset();
-    return decode_state::DECODE_SUCCESS;
-  default:
-    return decode_state::DECODE_FAILURE;
-  }
-}
-*/
 
 struct1_parser::struct1_parser()
     : state_(),
