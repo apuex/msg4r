@@ -113,10 +113,47 @@ BOOST_AUTO_TEST_CASE(struct1_test) {
   };
   msg4r::struct1_t s2;
   std::stringstream ssm;
+  std::stringstream segment1;
+  std::stringstream segment2;
+  std::stringstream segment3;
+  std::stringstream segment4;
+  msg4r::decode_state state;
   msg4r::write(ssm, s1);
+  // initial pos
+  std::istream::pos_type pos = ssm.tellg();
+  // get length
+  ssm.seekg(0, ssm.end);
+  BOOST_TEST(ssm.tellg() == static_cast<std::istream::pos_type>(63));
+  ssm.seekg(pos);
+  
   std::string str = ssm.str();
   msg4r::print_bytes(std::cout, str);
-  parse_struct1(ssm, s2);
+
+  std::string str1 = str.substr(0, 13);
+  std::string str2 = str.substr(13, 17);
+  std::string str3 = str.substr(30, 17);
+  std::string str4 = str.substr(47, 16);
+  
+  msg4r::print_bytes(std::cout, str1);
+  segment1.str(str1);
+  
+  msg4r::print_bytes(std::cout, str2);
+  segment2.str(str2);
+
+  msg4r::print_bytes(std::cout, str3);
+  segment3.str(str3);
+
+  msg4r::print_bytes(std::cout, str4);
+  segment4.str(str4);
+
+  state = parse_struct1(segment1, s2);
+  BOOST_TEST(decode_state::DECODE_EXPECTING == state);
+  state = parse_struct1(segment2, s2);
+  BOOST_TEST(decode_state::DECODE_EXPECTING == state);
+  state = parse_struct1(segment3, s2);
+  BOOST_TEST(decode_state::DECODE_EXPECTING == state);
+  state = parse_struct1(segment4, s2);
+  BOOST_TEST(decode_state::DECODE_SUCCESS == state);
   std::cout << "s1 = " << s1 << std::endl;
   std::cout << "s2 = " << s2 << std::endl;
   std::cout << "(s1 == s2) => " << (s1 == s2) << std::endl;
