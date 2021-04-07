@@ -31,21 +31,57 @@ bool operator==(const struct1& lhs, const struct1& v) {
                  );
 }
 
-std::istream& read(std::istream& is, struct1_t& v) {
-  msg4r::string_parser string_parser;
-  msg4r::number_parser<float32_t> float32_parser;
-  msg4r::number_parser<float64_t> float64_parser;
-  msg4r::map_parser<
-                    msg4r::string_parser,
-                    msg4r::string_parser
-                   > map_parser;
-  string_parser(is, v.name);
-  float32_parser(is, v.salary);
-  float64_parser(is, v.capital);
-  string_parser(is, v.title);
-  map_parser(is, v.props);
-  return is;
+typedef struct struct1_parser {
+  typedef struct1 value_type;
+  struct1_parser();
+  virtual ~struct1_parser();
+
+  decode_state operator()(std::istream& is, struct1_t& v);
+
+  // internal states 
+  // to remember parsing progress
+  int state_;
+  msg4r::string_parser parse_string_;
+  msg4r::number_parser<float32_t> parse_float32_;
+  msg4r::number_parser<float64_t> parse_float64_;
+  msg4r::map_parser<msg4r::string_parser, msg4r::string_parser> parse_string_string_map_;
+} struct1_parser_t;
+
+decode_state struct1_parser::operator()(std::istream& is, struct1_t& v) {
+  decode_state field_state;
+  // duplicated case pattern can be replaced by 
+  // list iteration or macro
+  // to be declarative instead of instruction procedures.
+  switch (state_) { 
+  case 0:
+    field_state = parse_string_(is, v.name);
+    if (decode_state::DECODE_SUCCESS != field_state) return field_state;
+  case 1:
+    field_state = parse_float32_(is, v.salary);
+    if (decode_state::DECODE_SUCCESS != field_state) return field_state;
+  case 2:
+    field_state = parse_float64_(is, v.capital);
+    if (decode_state::DECODE_SUCCESS != field_state) return field_state;
+  case 3:
+    field_state = parse_string_(is, v.title);
+    if (decode_state::DECODE_SUCCESS != field_state) return field_state;
+  case 4:
+    field_state = parse_string_string_map_(is, v.props);
+    if (decode_state::DECODE_SUCCESS != field_state) return field_state;
+  default:
+    return decode_state::DECODE_FAILURE;
+  }
 }
+
+struct1_parser::struct1_parser()
+    : state_(),
+      parse_string_(),
+      parse_float32_(),
+      parse_float64_(),
+      parse_string_string_map_() {}
+
+struct1_parser::~struct1_parser() {}
+
 
 std::ostream& write(std::ostream& os, const struct1_t& v) {
   msg4r::write(os, v.name);
@@ -74,6 +110,7 @@ std::ostream& operator<<(std::ostream& os, const msg4r::struct1& v) {
 using namespace msg4r;
 
 BOOST_AUTO_TEST_CASE(struct1_test) {
+  msg4r::struct1_parser_t parse_struct1;
   msg4r::struct1_t s1 = {
     "Donald J. Trump",
     35.6f,
@@ -86,7 +123,7 @@ BOOST_AUTO_TEST_CASE(struct1_test) {
   msg4r::write(ssm, s1);
   std::string str = ssm.str();
   msg4r::print_bytes(std::cout, str);
-  msg4r::read(ssm, s2);
+  parse_struct1(ssm, s2);
   std::cout << "s1 = " << s1 << std::endl;
   std::cout << "s2 = " << s2 << std::endl;
   std::cout << "(s1 == s2) => " << (s1 == s2) << std::endl;
