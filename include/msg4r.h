@@ -52,7 +52,6 @@ namespace msg4r {
 
 #define END_PARSER()                     \
   case __LINE__:                         \
-    state_ = __LINE__;                   \
     reset();                             \
     return decode_state::DECODE_SUCCESS; \
   default:                               \
@@ -101,12 +100,6 @@ enum class decode_state {
 
 std::ostream& operator<<(std::ostream& os, const encode_state& t);
 std::ostream& operator<<(std::ostream& os, const decode_state& t);
-
-/**
- * check input stream to see if there are enough bytes available to read.
- */
-bool expecting(std::istream& is, MSG4R_SIZE_T size);
-void rollback(std::istream& is, MSG4R_SIZE_T size);
 
 template <typename T>
 struct number_parser {
@@ -170,21 +163,6 @@ decode_state read(std::istream& is, std::string& v);
 encode_state write(std::ostream& os, const std::string& v);
 
 std::ostream& operator<<(std::ostream& os, const std::string& t);
-
-/**
- * read integers and numbers. T = { int8_t, ... }
- */
-template<typename T>
-decode_state read(std::istream& is, T& v) {
-  T t;
-  if (expecting(is, sizeof(t))) {
-    return decode_state::DECODE_EXPECTING;
-  } else {
-    is.read((char*)&t, sizeof(t));
-    v = to_native(t);
-    return decode_state::DECODE_SUCCESS;
-  }
-}
 
 /**
  * write integers and numbers. T = { int8_t, ... }

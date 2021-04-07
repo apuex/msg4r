@@ -45,18 +45,20 @@ bool operator==(const struct1& lhs, const struct1& v) {
 
 std::istream& read(std::istream& is, struct1_t& v) {
   msg4r::string_parser string_parser;
+  msg4r::number_parser<uint16_t> uint16_parser;
+  msg4r::number_parser<uint32_t> uint32_parser;
   msg4r::number_parser<float32_t> float32_parser;
   msg4r::number_parser<float64_t> float64_parser;
   msg4r::map_parser<
                     msg4r::string_parser,
                     msg4r::string_parser
                    > map_parser;
-  msg4r::read(is, v.version);
-  msg4r::read(is, v.class_type);
-  msg4r::read(is, v.id);
-  msg4r::read(is, v.value_type);
+  uint16_parser(is, v.version);
+  uint16_parser(is, v.class_type);
+  uint32_parser(is, v.id);
+  uint16_parser(is, v.value_type);
   string_parser(is, v.name);
-  msg4r::read(is, v.state);
+  uint16_parser(is, v.state);
   float64_parser(is, v.analog);
   string_parser(is, v.str);
   map_parser(is, v.props);

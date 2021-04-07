@@ -75,8 +75,9 @@ bool operator==(const switch_states& lhs, const switch_states& rhs) {
 */
 
 std::istream& read(std::istream& is, switch_states_t& v) {
+  msg4r::number_parser<uint8_t> parse;
   for (size_t i = 0; i != sizeof(v); ++i) {
-    msg4r::read(is, *(reinterpret_cast<uint8_t*>(&v) + i));
+    parse(is, *(reinterpret_cast<uint8_t*>(&v) + i));
   }
   return is;
 }

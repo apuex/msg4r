@@ -2,19 +2,6 @@
 
 namespace msg4r {
 
-bool expecting(std::istream& is, MSG4R_SIZE_T size) {
-  std::istream::pos_type cur_pos = is.tellg();
-  is.seekg(0, is.end);
-  std::istream::pos_type end_pos = is.tellg();
-  is.seekg(cur_pos);
-  return ((end_pos - cur_pos) < size);
-}
-
-void rollback(std::istream& is, MSG4R_SIZE_T size) {
-  std::istream::pos_type cur_pos = is.tellg();
-  is.seekg(cur_pos - std::istream::pos_type(size));
-}
-
 template<> decode_state number_parser<float32_t>::operator()(std::istream& is, float32_t& v) {
   auto initial = is.gcount();
   is.read((char*)&t_ + index_, sizeof(float32_t));
@@ -78,25 +65,6 @@ void string_parser::reset() {
   t_.clear();  // reset to initial state
   length_parser_.reset();
   t_parser.reset();
-}
-
-decode_state read(std::istream& is, std::string& v) {
-  MSG4R_SIZE_T length;
-  if (decode_state::DECODE_EXPECTING == read(is, length)) {
-    return decode_state::DECODE_EXPECTING;
-  }
-
-  if (expecting(is, length)) {
-    rollback(is, sizeof(length));
-    return decode_state::DECODE_EXPECTING;
-  }
-
-  for (MSG4R_SIZE_T i = 0; i != length; ++i) {
-    uint8_t c;
-    read(is, c);
-    v.push_back(c);
-  }
-  return decode_state::DECODE_SUCCESS;
 }
 
 encode_state write(std::ostream& os, const std::string& v) {

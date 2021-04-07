@@ -39,7 +39,7 @@ std::istream& read(std::istream& is, struct1_t& v) {
                     msg4r::string_parser,
                     msg4r::string_parser
                    > map_parser;
-  msg4r::read(is, v.name);
+  string_parser(is, v.name);
   float32_parser(is, v.salary);
   float64_parser(is, v.capital);
   string_parser(is, v.title);
