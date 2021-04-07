@@ -69,7 +69,7 @@ namespace msg4r {
 #define PARSE_LIST_STATE(state, op, s, T, t_, add, length, index) \
   case __LINE__: /* fall through*/                 \
     state = __LINE__;                              \
-    for (index = 0; index != length;) {            \
+    for (; index != length;) {                     \
       T c;                                         \
       auto status = op(s, c);                      \
       if (decode_state::DECODE_SUCCESS != status) return status; \
@@ -121,11 +121,13 @@ template<> decode_state number_parser<float64_t>::operator()(std::istream& is, f
 
 template<typename T>
 decode_state number_parser<T>::operator()(std::istream& is, T& v) {
-  auto initial = is.gcount();
+  auto initial = is.tellg();
+  if(-1 == initial) return decode_state::DECODE_EXPECTING;
   is.read((char*)&t_ + index_, sizeof(T));
-  auto current = is.gcount();
+  auto current = is.tellg();
+  if(-1 == current) return decode_state::DECODE_EXPECTING;
   index_ += (current - initial);
-  if(is.eof()) {
+  if(index_ != sizeof(T)) {
     return decode_state::DECODE_EXPECTING;
   } else {
     v = to_native(t_);

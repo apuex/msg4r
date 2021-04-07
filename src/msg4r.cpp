@@ -3,11 +3,13 @@
 namespace msg4r {
 
 template<> decode_state number_parser<float32_t>::operator()(std::istream& is, float32_t& v) {
-  auto initial = is.gcount();
+  auto initial = is.tellg();
+  if(-1 == initial) return decode_state::DECODE_EXPECTING;
   is.read((char*)&t_ + index_, sizeof(float32_t));
-  auto current = is.gcount();
+  auto current = is.tellg();
+  if(-1 == current) return decode_state::DECODE_EXPECTING;
   index_ += (current - initial);
-  if(is.eof()) {
+  if(index_ != sizeof(float32_t)) {
     return decode_state::DECODE_EXPECTING;
   } else {
     *reinterpret_cast<uint32_t*>(&v) = to_native(*reinterpret_cast<uint32_t*>(&t_));
@@ -18,11 +20,13 @@ template<> decode_state number_parser<float32_t>::operator()(std::istream& is, f
 }
 
 template<> decode_state number_parser<float64_t>::operator()(std::istream& is, float64_t& v) {
-  auto initial = is.gcount();
+  auto initial = is.tellg();
+  if(-1 == initial) return decode_state::DECODE_EXPECTING;
   is.read((char*)&t_ + index_, sizeof(float64_t));
-  auto current = is.gcount();
+  auto current = is.tellg();
+  if(-1 == current) return decode_state::DECODE_EXPECTING;
   index_ += (current - initial);
-  if(is.eof()) {
+  if(index_ != sizeof(float64_t)) {
     return decode_state::DECODE_EXPECTING;
   } else {
     *reinterpret_cast<uint64_t*>(&v) = to_native(*reinterpret_cast<uint64_t*>(&t_));

@@ -127,33 +127,47 @@ BOOST_AUTO_TEST_CASE(struct1_test) {
   ssm.seekg(pos);
   
   std::string str = ssm.str();
+  std::cout << "complete message:" << std::endl; 
   msg4r::print_bytes(std::cout, str);
 
+  std::cout << "splitted to 4 segment:" << std::endl; 
   std::string str1 = str.substr(0, 13);
   std::string str2 = str.substr(13, 17);
   std::string str3 = str.substr(30, 17);
   std::string str4 = str.substr(47, 16);
-  
+ 
+  std::cout << "segment 1:" << std::endl; 
   msg4r::print_bytes(std::cout, str1);
   segment1.str(str1);
   
+  std::cout << "segment 2:" << std::endl; 
   msg4r::print_bytes(std::cout, str2);
   segment2.str(str2);
 
+  std::cout << "segment 3:" << std::endl; 
   msg4r::print_bytes(std::cout, str3);
   segment3.str(str3);
 
+  std::cout << "segment 4:" << std::endl; 
   msg4r::print_bytes(std::cout, str4);
   segment4.str(str4);
 
   state = parse_struct1(segment1, s2);
+  std::cout << "parse segment 1 => " << state << std::endl; 
   BOOST_TEST(decode_state::DECODE_EXPECTING == state);
+  
   state = parse_struct1(segment2, s2);
+  std::cout << "parse segment 2 => " << state << std::endl; 
   BOOST_TEST(decode_state::DECODE_EXPECTING == state);
+  
   state = parse_struct1(segment3, s2);
+  std::cout << "parse segment 3 => " << state << std::endl; 
   BOOST_TEST(decode_state::DECODE_EXPECTING == state);
+  
   state = parse_struct1(segment4, s2);
+  std::cout << "parse segment 4 => " << state << std::endl; 
   BOOST_TEST(decode_state::DECODE_SUCCESS == state);
+
   std::cout << "s1 = " << s1 << std::endl;
   std::cout << "s2 = " << s2 << std::endl;
   std::cout << "(s1 == s2) => " << (s1 == s2) << std::endl;
