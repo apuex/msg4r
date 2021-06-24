@@ -43,3 +43,5 @@ vs
 /build/
 .project
 .cproject
+cmake-build-debug
+
