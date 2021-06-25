@@ -6,15 +6,39 @@
 
 namespace msg4r {
 
-class data_point {
-protected:
-  data_point(uint8_t t);
-public:
-  virtual ~data_point();
-  uint8_t data_type;
+enum class data_point_type {
+  DI = 0,
+  AI = 1,
+  SI = 2,
 };
 
-data_point::data_point(uint8_t  v): data_type(v) {}
+std::ostream& operator<<(std::ostream& os, const data_point_type& v) {
+  switch(v) {
+    case data_point_type::DI:
+      os << "data_point_type::DI";
+      break;
+    case data_point_type::AI:
+      os << "data_point_type::AI";
+      break;
+    case data_point_type::SI:
+      os << "data_point_type::SI";
+      break;
+    default:
+      os << "data_point_type::UNKNOWN";
+      break;
+  }
+  return os;
+}
+
+class data_point {
+protected:
+  data_point(const data_point_type t);
+public:
+  virtual ~data_point();
+  const data_point_type data_type;
+};
+
+data_point::data_point(const data_point_type v): data_type(v) {}
 data_point::~data_point() {}
 
 class di_point: public data_point {
@@ -25,8 +49,8 @@ public:
   bool value;
 };
 
-di_point::di_point(): data_point(0), value() {}
-di_point::di_point(bool v): data_point(0), value(v) {}
+di_point::di_point(): data_point(data_point_type::DI), value() {}
+di_point::di_point(bool v): data_point(data_point_type::DI), value(v) {}
 di_point::~di_point() {}
 
 // for equals tests in testcases.
@@ -45,7 +69,8 @@ std::ostream& operator<<(std::ostream& os, const di_point& v) {
   os << std::fixed
      << "msg4r::di_point"
      << " {"
-     << " data_type: " << static_cast<uint32_t>(v.data_type) << ","
+     << " data_type: " << v.data_type << ","
+     << std::boolalpha
      << " value: " << v.value
      << " }";
   return os;
@@ -59,11 +84,11 @@ public:
   double value;
 };
 
-ai_point::ai_point(): data_point(1), value() {}
-ai_point::ai_point(double v): data_point(1), value(v) {}
+ai_point::ai_point(): data_point(data_point_type::AI), value() {}
+ai_point::ai_point(double v): data_point(data_point_type::AI), value(v) {}
 ai_point::~ai_point() {}
 
-  // for equals tests in testcases.
+// for equals tests in testcases.
 bool operator==(const ai_point& lhs, const ai_point& v) {
   return std::tie( lhs.data_type
                  , lhs.value
@@ -75,11 +100,11 @@ bool operator==(const ai_point& lhs, const ai_point& v) {
 }
 
 std::ostream& operator<<(std::ostream& os, const ai_point& v) {
-  // os.unsetf(std::ios::fixed | std::ios::scientific);
   os << std::fixed
      << "msg4r::ai_point"
      << " {"
-     << " data_type: " << static_cast<uint32_t>(v.data_type) << ","
+     << " data_type: " << v.data_type << ","
+     << std::fixed
      << " value: " << v.value
      << " }";
   return os;
@@ -94,8 +119,8 @@ public:
   std::string value;
 };
 
-si_point::si_point(): data_point(2), value() {}
-si_point::si_point(const std::string& v): data_point(2), value(v) {}
+si_point::si_point(): data_point(data_point_type::SI), value() {}
+si_point::si_point(const std::string& v): data_point(data_point_type::SI), value(v) {}
 si_point::~si_point() {}
 
   // for equals tests in testcases.
@@ -114,7 +139,7 @@ std::ostream& operator<<(std::ostream& os, const si_point& v) {
   os << std::fixed
      << "msg4r::si_point"
      << " {"
-     << " data_type: " << static_cast<uint32_t>(v.data_type) << ","
+     << " data_type: " << v.data_type << ","
      << " value: " << v.value
      << " }";
   return os;
