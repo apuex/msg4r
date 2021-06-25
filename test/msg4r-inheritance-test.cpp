@@ -1,4 +1,4 @@
-#define BOOST_TEST_MODULE Struct1 Test
+#define BOOST_TEST_MODULE data_point Test
 #include <boost/test/included/unit_test.hpp>
 
 #include <msg4r.h>
@@ -45,13 +45,13 @@ data_point::~data_point() {}
 class di_point: public data_point {
 public:
   di_point();
-  di_point(uint8_t v);
+  di_point(uint32_t v);
   virtual ~di_point();
-  uint8_t value;
+  uint32_t value;
 };
 
 di_point::di_point(): data_point(data_point_type::DI), value() {}
-di_point::di_point(uint8_t v): data_point(data_point_type::DI), value(v) {}
+di_point::di_point(uint32_t v): data_point(data_point_type::DI), value(v) {}
 di_point::~di_point() {}
 
 // for equals tests in testcases.
@@ -72,7 +72,7 @@ std::ostream& operator<<(std::ostream& os, const di_point& v) {
      << " {"
      << " data_type: " << v.data_type << ","
      << std::boolalpha
-     << " value: " << v.value
+     << " value: " << static_cast<bool>(v.value)
      << " }";
   return os;
 }
@@ -91,23 +91,23 @@ public:
   di_parser();
   virtual ~di_parser();
 private:
-  msg4r::number_parser<uint8_t> parse_uint8_;
+  msg4r::number_parser<uint32_t> parse_uint32_;
 };
 
 IMPLEMENT_PTR_PARSER(di_parser, data_point::data_point_ptr)
 BEGIN_IMPLEMENT_PARSER(di_parser)
-  PARSE_FIELD(parse_uint8_, is, v.value)
+  PARSE_FIELD(parse_uint32_, is, v.value)
 END_IMPLEMENT_PARSER()
 
 di_parser::di_parser()
     : state_(),
-      parse_uint8_() {}
+      parse_uint32_() {}
 
 di_parser::~di_parser() {}
 
 void di_parser::reset() {
   state_ = 0;
-  parse_uint8_.reset();
+  parse_uint32_.reset();
 }
 
 class ai_point: public data_point {
@@ -322,13 +322,17 @@ std::ostream& write(std::ostream& os, const si_point& v) {
 
 using namespace msg4r;
 
-BOOST_AUTO_TEST_CASE(data_point_test) {
+BOOST_AUTO_TEST_CASE(ai_data_point_test) {
   msg4r::data_point_parser parse_data_point;
-  msg4r::ai_point s1 = { 35.6 };
+  msg4r::ai_point a1 = { 35.6 };
+  msg4r::di_point d1 = { true };
+  msg4r::si_point s1 = { "Hello, World!" };
+  msg4r::data_point::data_point_ptr a2;
+  msg4r::data_point::data_point_ptr d2;
   msg4r::data_point::data_point_ptr s2;
   std::stringstream ssm;
   msg4r::decode_state state;
-  msg4r::write(ssm, s1);
+  msg4r::write(ssm, a1);
   // initial pos
   std::istream::pos_type pos = ssm.tellg();
   // get length
@@ -340,14 +344,74 @@ BOOST_AUTO_TEST_CASE(data_point_test) {
   std::cout << "complete message:" << std::endl; 
   msg4r::print_bytes(std::cout, str);
 
+  state = parse_data_point(ssm, a2);
+  std::cout << "parse ssm => " << state << std::endl;
+  BOOST_TEST(decode_state::DECODE_SUCCESS == state);
+
+  std::cout << "a1 = " << a1 << std::endl;
+  std::cout << "a2 = " << (*a2) << std::endl;
+  std::cout << "(a1 == a2) => "
+            << std::boolalpha
+            << (a1 == dynamic_cast<ai_point&>(*a2)) << std::endl;
+  BOOST_TEST(a1 == dynamic_cast<ai_point&>(*a2));
+}
+
+BOOST_AUTO_TEST_CASE(di_data_point_test) {
+  msg4r::data_point_parser parse_data_point;
+  msg4r::di_point d1 = { true };
+  msg4r::data_point::data_point_ptr d2;
+  std::stringstream ssm;
+  msg4r::decode_state state;
+  msg4r::write(ssm, d1);
+  // initial pos
+  std::istream::pos_type pos = ssm.tellg();
+  // get length
+  ssm.seekg(0, ssm.end);
+  BOOST_TEST(ssm.tellg() == static_cast<std::istream::pos_type>(5));
+  ssm.seekg(pos);
+
+  std::string str = ssm.str();
+  std::cout << "complete message:" << std::endl;
+  msg4r::print_bytes(std::cout, str);
+
+  state = parse_data_point(ssm, d2);
+  std::cout << "parse ssm => " << state << std::endl;
+  BOOST_TEST(decode_state::DECODE_SUCCESS == state);
+
+  std::cout << "d1 = " << d1 << std::endl;
+  std::cout << "d2 = " << (*d2) << std::endl;
+  std::cout << "(d1 == d2) => "
+            << std::boolalpha
+            << (d1 == dynamic_cast<di_point&>(*d2)) << std::endl;
+  BOOST_TEST(d1 == dynamic_cast<di_point&>(*d2));
+}
+
+BOOST_AUTO_TEST_CASE(si_data_point_test) {
+  msg4r::data_point_parser parse_data_point;
+  msg4r::si_point s1 = { "Hello, World!" };
+  msg4r::data_point::data_point_ptr s2;
+  std::stringstream ssm;
+  msg4r::decode_state state;
+  msg4r::write(ssm, s1);
+  // initial pos
+  std::istream::pos_type pos = ssm.tellg();
+  // get length
+  ssm.seekg(0, ssm.end);
+  BOOST_TEST(ssm.tellg() == static_cast<std::istream::pos_type>(15));
+  ssm.seekg(pos);
+
+  std::string str = ssm.str();
+  std::cout << "complete message:" << std::endl;
+  msg4r::print_bytes(std::cout, str);
+
   state = parse_data_point(ssm, s2);
   std::cout << "parse ssm => " << state << std::endl;
   BOOST_TEST(decode_state::DECODE_SUCCESS == state);
 
   std::cout << "s1 = " << s1 << std::endl;
   std::cout << "s2 = " << (*s2) << std::endl;
-  auto& p = dynamic_cast<ai_point&>(*s2);
-  std::cout << "(s1 == s2) => " << (s1 == p) << std::endl;
-  BOOST_TEST(s1 == p);
+  std::cout << "(s1 == s2) => "
+            << std::boolalpha
+            << (s1 == dynamic_cast<si_point&>(*s2)) << std::endl;
+  BOOST_TEST(s1 == dynamic_cast<si_point&>(*s2));
 }
-
