@@ -104,6 +104,7 @@ int main(int argc, char* argv[]) {
   feeder.feed(null_animal);
   null_animal->action();
 
+  std::cout << "sizeof(bool) = " << sizeof(bool) << std::endl;
   std::cout << "sizeof(animal_type) = " << sizeof(animal_type) << std::endl;
 	return 0;
 }

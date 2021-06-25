@@ -38,6 +38,7 @@ namespace msg4r {
 #endif
 
 #define DECLARE_PARSER_FOR(value)                           \
+public:                                                     \
   typedef value value_type;                                 \
   decode_state operator()(std::istream& is, value_type& v); \
   void reset();                                             \
@@ -57,16 +58,19 @@ decode_state parser::operator()(std::istream& is, value_type& v) { \
       return field_state;                            \
     state_ += 1;
 
-#define PARSE_DYNAMIC_FIELD(factory, type_field, parser, stream, field)  \
-  case __LINE__:                                                         \
-    state_ = __LINE__;                                                   \
-    parser = factory(type_field);                                        \
-    state_ += 1;                                                         \
-  case __LINE__:                                                         \
-    state_ = __LINE__;                                                   \
-    field_state = parser(stream, field);                                 \
-    if (decode_state::DECODE_SUCCESS != field_state)                     \
-      return field_state;                                                \
+#define INIT_DYNAMIC_FIELD_PARSER(init_action, type_field) \
+  case __LINE__:                                           \
+    state_ = __LINE__;                                     \
+    init_action(type_field);                               \
+    state_ += 1;
+
+#define PARSE_DYNAMIC_FIELD(parser, stream, field)   \
+  case __LINE__:                                     \
+    state_ = __LINE__;                               \
+    field_state = (*parser)(stream, field);          \
+    if (decode_state::DECODE_SUCCESS != field_state) \
+      return field_state;                            \
+    v = field;                                       \
     state_ += 1;
 
 #define PARSE_VALIDATE_FIELD(parser, stream, field, validate_expr)    \
