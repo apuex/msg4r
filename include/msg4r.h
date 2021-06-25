@@ -37,7 +37,7 @@ namespace msg4r {
 #define MSG4R_PACKED(n) __attribute__((packed))
 #endif
 
-#define DECLARE_PARSER_FOR(value)                               \
+#define DECLARE_PARSER_FOR(value)                           \
   typedef value value_type;                                 \
   decode_state operator()(std::istream& is, value_type& v); \
   void reset();                                             \
@@ -55,6 +55,16 @@ decode_state parser::operator()(std::istream& is, value_type& v) { \
     field_state = parser(stream, field);             \
     if (decode_state::DECODE_SUCCESS != field_state) \
       return field_state;                            \
+    state_ += 1;
+
+#define PARSE_VALIDATE_FIELD(parser, stream, field, validate_expr)    \
+  case __LINE__:                                                      \
+    state_ = __LINE__;                                                \
+    field_state = parser(stream, field);                              \
+    if (decode_state::DECODE_SUCCESS != field_state)                  \
+      return field_state;                                             \
+    if (!validate_expr)                                               \
+      return decode_state::DECODE_FAILURE;                            \
     state_ += 1;
 
 #define END_IMPLEMENT_PARSER()           \

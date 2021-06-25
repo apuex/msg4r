@@ -47,7 +47,7 @@ private:
 BEGIN_IMPLEMENT_PARSER(struct1_parser)
   PARSE_FIELD(parse_string_, is, v.name)
   PARSE_FIELD(parse_float32_, is, v.salary)
-  PARSE_FIELD(parse_float64_, is, v.capital)
+  PARSE_VALIDATE_FIELD(parse_float64_, is, v.capital, (v.capital > 300000000.00))
   PARSE_FIELD(parse_string_, is, v.title)
   PARSE_FIELD(parse_string_string_map_, is, v.props)
 END_IMPLEMENT_PARSER()
