@@ -168,8 +168,8 @@ decode_state number_parser<T>::operator()(std::istream& is, T& v) {
 
 template <typename T>
 void number_parser<T>::reset() {
-  index_ = 0;   // reset to initial state
-  t_ = 0;       // reset to initial state
+  index_ = static_cast<MSG4R_SIZE_T>(0); // reset to initial state
+  t_ = static_cast<T>(0);                // reset to initial state
 }
 
 encode_state write(std::ostream& os, const float32_t& v);

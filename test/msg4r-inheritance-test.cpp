@@ -6,7 +6,7 @@
 
 namespace msg4r {
 
-enum class data_point_type {
+enum class data_point_type: uint8_t {
   DI = 0,
   AI = 1,
   SI = 2,
@@ -34,6 +34,7 @@ class data_point {
 protected:
   data_point(const data_point_type t);
 public:
+  typedef std::shared_ptr<data_point> data_point_ptr;
   virtual ~data_point();
   const data_point_type data_type;
 };
@@ -145,7 +146,6 @@ std::ostream& operator<<(std::ostream& os, const si_point& v) {
   return os;
 }
 
-/*
 typedef struct data_point_parser {
   DECLARE_PARSER_FOR(data_point)
 public:
@@ -153,27 +153,29 @@ public:
   virtual ~data_point_parser();
 
 private:
-  msg4r::number_parser<uint8_t> parse_uint8_;
+  msg4r::number_parser<data_point_type> parse_uint8_;
   msg4r::number_parser<float64_t> parse_float64_;
-  msg4r::string_parser string_parser;
+  msg4r::string_parser parse_string_;
 } data_point_parser_t;
 
 BEGIN_IMPLEMENT_PARSER(data_point_parser)
-  PARSE_FIELD(parse_uint8_, is, v.data_type)
-  PARSE_DYNAMIC_FIELD(parse_factory, v.data_type, is, v.value)
+  //PARSE_FIELD(parse_uint8_, is, v.data_type)
+  //PARSE_DYNAMIC_FIELD(parse_factory, v.data_type, is, v.value)
 END_IMPLEMENT_PARSER()
 
 data_point_parser::data_point_parser()
     : state_(),
-      parse_uint32_(),
-      parse_float64_() {}
+      parse_uint8_(),
+      parse_float64_(),
+      parse_string_() {}
 
-data_point_parser::~data_point_parser() {}
+  data_point_parser::~data_point_parser() {}
 
 void data_point_parser::reset() {
   state_ = 0;
-  parse_float64_.reset();
   parse_uint8_.reset();
+  parse_float64_.reset();
+  parse_string_.reset();
 }
 
 template<typename T>
@@ -182,7 +184,6 @@ std::ostream& write(std::ostream& os, const T& v) {
   msg4r::write(os, v.value);
   return os;
 }
-*/
 
 } // namespace msg4r
 

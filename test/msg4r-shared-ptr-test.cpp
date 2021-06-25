@@ -1,7 +1,7 @@
 #include <iostream>
 #include <memory>
 
-enum class animal_type {
+enum class animal_type: uint8_t {
   CAT = 0,
   DOG = 1
 };
@@ -104,5 +104,6 @@ int main(int argc, char* argv[]) {
   feeder.feed(null_animal);
   null_animal->action();
 
+  std::cout << "sizeof(animal_type) = " << sizeof(animal_type) << std::endl;
 	return 0;
 }
