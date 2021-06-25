@@ -37,17 +37,33 @@ namespace msg4r {
 #define MSG4R_PACKED(n) __attribute__((packed))
 #endif
 
-#define DECLARE_PARSER_FOR(value)                           \
-public:                                                     \
-  typedef value value_type;                                 \
-  decode_state operator()(std::istream& is, value_type& v); \
-  void reset();                                             \
+#define DECLARE_PARSER_FOR(value)               \
+public:                                                         \
+  typedef value value_type;                                     \
+  decode_state operator()(std::istream& is, value_type& v);     \
+  void reset();                                                 \
+private:                                                        \
   int state_;
 
-#define BEGIN_IMPLEMENT_PARSER(parser)                             \
-decode_state parser::operator()(std::istream& is, value_type& v) { \
-  decode_state field_state;                                        \
-  switch (state_) {                                                \
+#define DECLARE_DYNAMIC_PARSER_FOR(value, value_ptr_type)               \
+public:                                                         \
+  typedef value value_type;                                     \
+  decode_state operator()(std::istream& is, value_type& v);     \
+  decode_state operator()(std::istream& is, value_ptr_type& v); \
+  void reset();                                                 \
+private:                                                        \
+  int state_;
+
+#define IMPLEMENT_PTR_PARSER(parser, value_ptr_type)                                   \
+decode_state parser::operator()(std::istream& is, value_ptr_type& v) { \
+  value_type& value = *dynamic_cast<value_type*>(v.get());             \
+  return operator()(is, value);                                        \
+}                                                                      \
+
+#define BEGIN_IMPLEMENT_PARSER(parser)                                 \
+decode_state parser::operator()(std::istream& is, value_type& v) {     \
+  decode_state field_state;                                            \
+  switch (state_) {                                                    \
   case 0:
 
 #define PARSE_FIELD(parser, stream, field)           \

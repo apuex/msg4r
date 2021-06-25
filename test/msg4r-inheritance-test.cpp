@@ -85,19 +85,16 @@ public:
 };
 typedef std::shared_ptr<abstract_parser> data_point_parser_ptr;
 
-  class di_parser: public abstract_parser {
-  DECLARE_PARSER_FOR(di_point)
+class di_parser: public abstract_parser {
+  DECLARE_DYNAMIC_PARSER_FOR(di_point, data_point::data_point_ptr)
 public:
   di_parser();
   virtual ~di_parser();
-  decode_state operator()(std::istream& is, data_point::data_point_ptr& v) {
-    di_point& value = *dynamic_cast<di_point*>(v.get());
-    return operator()(is, value);
-  }
 private:
   msg4r::number_parser<uint8_t> parse_uint8_;
 };
 
+IMPLEMENT_PTR_PARSER(di_parser, data_point::data_point_ptr)
 BEGIN_IMPLEMENT_PARSER(di_parser)
   PARSE_FIELD(parse_uint8_, is, v.value)
 END_IMPLEMENT_PARSER()
@@ -148,19 +145,16 @@ std::ostream& operator<<(std::ostream& os, const ai_point& v) {
 }
 
 typedef struct ai_parser: public abstract_parser {
-  DECLARE_PARSER_FOR(ai_point)
+  DECLARE_DYNAMIC_PARSER_FOR(ai_point, data_point::data_point_ptr)
 public:
   ai_parser();
   virtual ~ai_parser();
 
-  decode_state operator()(std::istream& is, data_point::data_point_ptr& v) {
-    ai_point& value = *dynamic_cast<ai_point*>(v.get());
-    return operator()(is, value);
-  }
 private:
   msg4r::number_parser<float64_t> parse_float64_;
 } ai_parser_t;
 
+IMPLEMENT_PTR_PARSER(ai_parser, data_point::data_point_ptr)
 BEGIN_IMPLEMENT_PARSER(ai_parser)
   PARSE_FIELD(parse_float64_, is, v.value)
 END_IMPLEMENT_PARSER()
@@ -227,19 +221,16 @@ std::ostream& operator<<(std::ostream& os, const data_point& v) {
   return os;
 }
 typedef struct si_parser: public abstract_parser {
-  DECLARE_PARSER_FOR(si_point)
+  DECLARE_DYNAMIC_PARSER_FOR(si_point, data_point::data_point_ptr)
 public:
   si_parser();
   virtual ~si_parser();
 
-  decode_state operator()(std::istream& is, data_point::data_point_ptr& v) {
-    si_point& value = *dynamic_cast<si_point*>(v.get());
-    return operator()(is, value);
-  }
 private:
   msg4r::string_parser parse_string_;
 } si_parser_t;
 
+IMPLEMENT_PTR_PARSER(si_parser, data_point::data_point_ptr)
 BEGIN_IMPLEMENT_PARSER(si_parser)
   PARSE_FIELD(parse_string_, is, v.value)
 END_IMPLEMENT_PARSER()
