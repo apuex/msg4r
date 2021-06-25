@@ -61,6 +61,10 @@ SET(MSG4R_COMPILER_TEST_SRCS
   test/msg4r-compiler-test.cpp
 )
 
+SET(MSG4R_INHERITANCE_TEST_SRCS
+  test/msg4r-inheritance-test.cpp
+  )
+
 SET(MSG4R_ISTREAM_TEST_SRCS
   test/msg4r-istream-test.cpp
 )
@@ -143,6 +147,13 @@ target_compile_definitions(msg4r PUBLIC _MSG4R_)
 ADD_EXECUTABLE(msg4r-compiler-test ${MSG4R_COMPILER_TEST_SRCS})
 if(UNIX)
 set_target_properties(msg4r-compiler-test PROPERTIES LINK_FLAGS_RELEASE -s)
+endif()
+
+ADD_EXECUTABLE(msg4r-inheritance-test ${MSG4R_INHERITANCE_TEST_SRCS})
+target_include_directories(msg4r-inheritance-test PRIVATE ${Boost_INCLUDE_DIRS})
+target_link_libraries(msg4r-inheritance-test msg4r ${Boost_LIBRARIES} ${Boost_unit_test_framework})
+if(UNIX)
+  set_target_properties(msg4r-inheritance-test PROPERTIES LINK_FLAGS_RELEASE -s)
 endif()
 
 ADD_EXECUTABLE(msg4r-istream-test ${MSG4R_ISTREAM_TEST_SRCS})
