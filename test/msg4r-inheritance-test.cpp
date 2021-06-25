@@ -257,7 +257,7 @@ private:
   data_point::data_point_ptr data_point_;
   data_point_parser_ptr parser_ptr_;
 
-  void init_action(const data_point_type data_type) {
+  inline void init_action(const data_point_type data_type) {
     switch(data_type) {
       case data_point_type::DI:
         data_point_ = std::make_shared<di_point>();
