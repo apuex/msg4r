@@ -37,24 +37,24 @@ namespace msg4r {
 #define MSG4R_PACKED(n) __attribute__((packed))
 #endif
 
-#define DECLARE_PARSER_FOR(value)               \
+#define DECLARE_PARSER_FOR(value)                               \
 public:                                                         \
   typedef value value_type;                                     \
   decode_state operator()(std::istream& is, value_type& v);     \
   void reset();                                                 \
 private:                                                        \
-  int state_;
+  int state_;                                                   \
 
-#define DECLARE_DYNAMIC_PARSER_FOR(value, value_ptr_type)               \
+#define DECLARE_DYNAMIC_PARSER_FOR(value, value_ptr_type)       \
 public:                                                         \
   typedef value value_type;                                     \
   decode_state operator()(std::istream& is, value_type& v);     \
   decode_state operator()(std::istream& is, value_ptr_type& v); \
   void reset();                                                 \
 private:                                                        \
-  int state_;
+  int state_;                                                   \
 
-#define IMPLEMENT_PTR_PARSER(parser, value_ptr_type)                                   \
+#define IMPLEMENT_PTR_PARSER(parser, value_ptr_type)                   \
 decode_state parser::operator()(std::istream& is, value_ptr_type& v) { \
   value_type& value = *dynamic_cast<value_type*>(v.get());             \
   return operator()(is, value);                                        \
@@ -64,7 +64,7 @@ decode_state parser::operator()(std::istream& is, value_ptr_type& v) { \
 decode_state parser::operator()(std::istream& is, value_type& v) {     \
   decode_state field_state;                                            \
   switch (state_) {                                                    \
-  case 0:
+  case 0:                                                              \
 
 #define PARSE_FIELD(parser, stream, field)           \
   case __LINE__:                                     \
@@ -72,13 +72,13 @@ decode_state parser::operator()(std::istream& is, value_type& v) {     \
     field_state = parser(stream, field);             \
     if (decode_state::DECODE_SUCCESS != field_state) \
       return field_state;                            \
-    state_ += 1;
+    state_ += 1;                                     \
 
 #define INIT_DYNAMIC_FIELD_PARSER(init_action, type_field) \
   case __LINE__:                                           \
     state_ = __LINE__;                                     \
     init_action(type_field);                               \
-    state_ += 1;
+    state_ += 1;                                           \
 
 #define PARSE_DYNAMIC_FIELD(parser, stream, field)   \
   case __LINE__:                                     \
@@ -87,7 +87,7 @@ decode_state parser::operator()(std::istream& is, value_type& v) {     \
     if (decode_state::DECODE_SUCCESS != field_state) \
       return field_state;                            \
     v = field;                                       \
-    state_ += 1;
+    state_ += 1;                                     \
 
 #define PARSE_VALIDATE_FIELD(parser, stream, field, validate_expr)    \
   case __LINE__:                                                      \
@@ -97,7 +97,7 @@ decode_state parser::operator()(std::istream& is, value_type& v) {     \
       return field_state;                                             \
     if (!validate_expr)                                               \
       return decode_state::DECODE_FAILURE;                            \
-    state_ += 1;
+    state_ += 1;                                                      \
 
 #define END_IMPLEMENT_PARSER()           \
   case __LINE__:                         \
@@ -106,7 +106,7 @@ decode_state parser::operator()(std::istream& is, value_type& v) {     \
   default:                               \
     return decode_state::DECODE_FAILURE; \
   }                                      \
-}
+}                                        \
 
 #define BEGIN_STATE(state) switch(state) { case 0:
 
@@ -114,7 +114,7 @@ decode_state parser::operator()(std::istream& is, value_type& v) {     \
   case __LINE__: /* fall through*/    \
     {state = __LINE__;                \
     auto status = op(s, v);           \
-    if (decode_state::DECODE_SUCCESS != status) return status;}
+    if (decode_state::DECODE_SUCCESS != status) return status;} \
 
 #define PARSE_LIST_STATE(state, op, s, T, t_, add, length, index) \
   case __LINE__: /* fall through*/                 \
@@ -125,7 +125,7 @@ decode_state parser::operator()(std::istream& is, value_type& v) {     \
       if (decode_state::DECODE_SUCCESS != status) return status; \
       index += 1;                                  \
       t_.add(c);                                   \
-    }
+    }                                              \
 
 #define END_STATE(state, t_, v)          \
   case __LINE__: /* fall through*/       \
@@ -133,7 +133,7 @@ decode_state parser::operator()(std::istream& is, value_type& v) {     \
     v = t_;                              \
     reset();                             \
   }                                      \
-  return decode_state::DECODE_SUCCESS;   
+  return decode_state::DECODE_SUCCESS;   \
 
 
 enum class encode_state {
