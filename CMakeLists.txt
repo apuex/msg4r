@@ -109,6 +109,10 @@ SET(MSG4R_SET_TEST_SRCS
   test/msg4r-set-test.cpp
 )
 
+SET(MSG4R_SHARED_PTR_TEST_SRCS
+  test/msg4r-shared-ptr-test.cpp
+)
+
 SET(MSG4R_STATE_TEST_SRCS
   test/msg4r-state-test.cpp
 )
@@ -241,6 +245,11 @@ set_target_properties(msg4r-set-test PROPERTIES LINK_FLAGS_RELEASE -s)
 endif()
 ADD_TEST(NAME msg4r-set-test COMMAND msg4r-set-test)
 
+ADD_EXECUTABLE(msg4r-shared-ptr-test ${MSG4R_SHARED_PTR_TEST_SRCS})
+if(UNIX)
+  set_target_properties(msg4r-shared-ptr-test PROPERTIES LINK_FLAGS_RELEASE -s)
+endif()
+
 ADD_EXECUTABLE(msg4r-state-test ${MSG4R_STATE_TEST_SRCS})
 target_include_directories(msg4r-state-test PRIVATE ${Boost_INCLUDE_DIRS})
 target_link_libraries(msg4r-state-test msg4r ${Boost_LIBRARIES} ${Boost_unit_test_framework})
@@ -302,6 +311,7 @@ ADD_TEST(NAME msg4r-istream-test COMMAND msg4r-istream-test)
 ADD_TEST(NAME msg4r-json-test COMMAND msg4r-json-test)
 ADD_TEST(NAME msg4r-binary-test COMMAND msg4r-binary-test)
 ADD_TEST(NAME msg4r-endianness-test COMMAND msg4r-endianness-test)
+ADD_TEST(NAME msg4r-shared-ptr-test COMMAND msg4r-shared-ptr-test)
 
 set_target_properties(msg4r PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
 
