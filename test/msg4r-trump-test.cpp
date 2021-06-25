@@ -32,26 +32,25 @@ bool operator==(const struct1& lhs, const struct1& v) {
 }
 
 typedef struct struct1_parser {
-  typedef struct1 value_type;
+  DECLARE_PARSER_FOR(struct1)
+public:
   struct1_parser();
   virtual ~struct1_parser();
-  
+
+private:
   msg4r::string_parser parse_string_;
   msg4r::number_parser<float32_t> parse_float32_;
   msg4r::number_parser<float64_t> parse_float64_;
   msg4r::map_parser<msg4r::string_parser, msg4r::string_parser> parse_string_string_map_;
-  DECLARE_PARSER()
 } struct1_parser_t;
 
-//decode_state struct1_parser::operator()(std::istream& is, value_type& v) {
-BEGIN_PARSER(struct1_parser)
-    PARSE_FIELD(parse_string_, is, v.name)
-    PARSE_FIELD(parse_float32_, is, v.salary)
-    PARSE_FIELD(parse_float64_, is, v.capital)
-    PARSE_FIELD(parse_string_, is, v.title)
-    PARSE_FIELD(parse_string_string_map_, is, v.props)
-END_PARSER()
-//}
+BEGIN_IMPLEMENT_PARSER(struct1_parser)
+  PARSE_FIELD(parse_string_, is, v.name)
+  PARSE_FIELD(parse_float32_, is, v.salary)
+  PARSE_FIELD(parse_float64_, is, v.capital)
+  PARSE_FIELD(parse_string_, is, v.title)
+  PARSE_FIELD(parse_string_string_map_, is, v.props)
+END_IMPLEMENT_PARSER()
 
 struct1_parser::struct1_parser()
     : state_(),

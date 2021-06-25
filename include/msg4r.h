@@ -37,12 +37,13 @@ namespace msg4r {
 #define MSG4R_PACKED(n) __attribute__((packed))
 #endif
 
-#define DECLARE_PARSER()                                    \
+#define DECLARE_PARSER_FOR(value)                               \
+  typedef value value_type;                                 \
   decode_state operator()(std::istream& is, value_type& v); \
   void reset();                                             \
   int state_;
 
-#define BEGIN_PARSER(parser)                                       \
+#define BEGIN_IMPLEMENT_PARSER(parser)                             \
 decode_state parser::operator()(std::istream& is, value_type& v) { \
   decode_state field_state;                                        \
   switch (state_) {                                                \
@@ -56,7 +57,7 @@ decode_state parser::operator()(std::istream& is, value_type& v) { \
       return field_state;                            \
     state_ += 1;
 
-#define END_PARSER()                     \
+#define END_IMPLEMENT_PARSER()           \
   case __LINE__:                         \
     reset();                             \
     return decode_state::DECODE_SUCCESS; \
