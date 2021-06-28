@@ -562,6 +562,15 @@ void print_bytes(std::ostream& os, T& str) {
 }
 
 void print_bytes(std::ostream& os, const char* buff, const size_t length);
+template <typename Iterator>
+void print_bytes(std::ostream& os, const Iterator begin, const Iterator end) {
+  os << "[ ";
+  std::for_each(begin, end, [&](auto& e) {
+    os << std::hex << std::uppercase << std::setw(2) << std::setfill('0')
+       << (static_cast<uint32_t>(e) & 0xff) << " ";
+  });
+  os << "]" << std::endl;
+}
 
 /*
 template<typename K, typename V>
