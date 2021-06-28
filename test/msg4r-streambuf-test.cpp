@@ -1,10 +1,10 @@
 #define BOOST_TEST_MODULE Streambuf Test
-#include <boost/test/included/unit_test.hpp>
-
-#include <msg4r.h>
 #ifdef _WIN32
 #include <windows.h>
 #endif
+#include <boost/test/included/unit_test.hpp>
+
+#include <msg4r.h>
 #include <boost/asio.hpp>
 #include <boost/asio/buffer.hpp>
 #include <boost/asio/streambuf.hpp>
