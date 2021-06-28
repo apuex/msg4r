@@ -9,6 +9,33 @@
 #include <boost/asio/buffer.hpp>
 #include <boost/asio/streambuf.hpp>
 
+BOOST_AUTO_TEST_CASE(read_bytes_test) {
+  uint8_t buf_out[] = { 0xfe, 0xca };
+  uint8_t buf_in[4] = { 0 };
+  boost::asio::streambuf sb_out;
+  boost::asio::streambuf sb_in;
+  std::ostream os(&sb_out);
+  os.write(reinterpret_cast<const char*>(buf_out), sizeof(buf_out));
+  msg4r::print_bytes(std::cout,
+                     boost::asio::buffers_begin(sb_out.data()),
+                     boost::asio::buffers_begin(sb_out.data()) + sb_out.size());
+
+  std::copy(boost::asio::buffers_begin(sb_out.data()),
+            boost::asio::buffers_begin(sb_out.data()) + sb_out.size(),
+            boost::asio::buffers_begin(sb_in.prepare(sb_out.size())));
+  sb_in.commit(sb_out.size());
+  BOOST_TEST(sb_in.size() == sb_out.size());
+
+  std::istream is(&sb_in);
+  is.read(reinterpret_cast<char*>(buf_in), sizeof(buf_in));
+  std::cout << "is.eof() = " << is.eof() << std::endl;
+  std::cout << "is.bad() = " << is.bad() << std::endl;
+  std::cout << "is.good() = " << is.good() << std::endl;
+  std::cout << "is.fail() = " << is.fail() << std::endl;
+  std::cout << "is.tellg() = " << is.tellg() << std::endl;
+  std::cout << "is.gcount() = " << is.gcount() << std::endl;
+}
+
 BOOST_AUTO_TEST_CASE(string_test) {
   std::string str_out("hello, world!");
   std::string str_in;
