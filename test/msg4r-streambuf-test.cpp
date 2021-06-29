@@ -36,6 +36,59 @@ BOOST_AUTO_TEST_CASE(read_bytes_test) {
   std::cout << "is.gcount() = " << is.gcount() << std::endl;
 }
 
+BOOST_AUTO_TEST_CASE(segment_test) {
+  uint8_t buf_out1[] = { 0xfe, 0xca };
+  uint8_t buf_out2[] = { 0xbe, 0xba };
+  uint8_t buf_out3[] = { 0xad, 0xde };
+  uint8_t buf_out4[] = { 0xef, 0xbe };
+  uint8_t buf_in[8] = { 0 };
+  boost::asio::streambuf sb_out;
+  auto segment1 = sb_out.prepare(8);
+  std::copy(buf_out1,
+            buf_out1 + 8,
+            boost::asio::buffers_begin(segment1));
+  sb_out.commit(2);
+
+  auto segment2 = sb_out.prepare(8);
+  std::copy(buf_out2,
+            buf_out2 + 8,
+            boost::asio::buffers_begin(segment2));
+  sb_out.commit(2);
+
+  auto segment3 = sb_out.prepare(8);
+  std::copy(buf_out3,
+            buf_out3 + 8,
+            boost::asio::buffers_begin(segment3));
+  sb_out.commit(2);
+
+  auto segment4 = sb_out.prepare(8);
+  std::copy(buf_out4,
+            buf_out4 + 8,
+            boost::asio::buffers_begin(segment4));
+  sb_out.commit(2);
+
+  msg4r::print_bytes(std::cout,
+                     boost::asio::buffers_begin(sb_out.data()),
+                     boost::asio::buffers_begin(sb_out.data()) + sb_out.size());
+
+  uint16_t word;
+  std::istream is(&sb_out);
+  is.read(reinterpret_cast<char*>(&word), sizeof(word));
+  BOOST_TEST(0xcafe == word);
+  is.read(reinterpret_cast<char*>(&word), sizeof(word));
+  BOOST_TEST(0xbabe == word);
+  is.read(reinterpret_cast<char*>(&word), sizeof(word));
+  BOOST_TEST(0xdead == word);
+  is.read(reinterpret_cast<char*>(&word), sizeof(word));
+  BOOST_TEST(0xbeef == word);
+  std::cout << "is.eof() = " << is.eof() << std::endl;
+  std::cout << "is.bad() = " << is.bad() << std::endl;
+  std::cout << "is.good() = " << is.good() << std::endl;
+  std::cout << "is.fail() = " << is.fail() << std::endl;
+  std::cout << "is.tellg() = " << is.tellg() << std::endl;
+  std::cout << "is.gcount() = " << is.gcount() << std::endl;
+}
+
 BOOST_AUTO_TEST_CASE(string_test) {
   std::string str_out("hello, world!");
   std::string str_in;
