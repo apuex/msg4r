@@ -37,35 +37,36 @@ BOOST_AUTO_TEST_CASE(read_bytes_test) {
 }
 
 BOOST_AUTO_TEST_CASE(segment_test) {
+  const size_t BUFF_SIZE = 8;
   uint8_t buf_out1[] = { 0xfe, 0xca };
   uint8_t buf_out2[] = { 0xbe, 0xba };
   uint8_t buf_out3[] = { 0xad, 0xde };
   uint8_t buf_out4[] = { 0xef, 0xbe };
-  uint8_t buf_in[8] = { 0 };
+
   boost::asio::streambuf sb_out;
-  auto segment1 = sb_out.prepare(8);
+  auto segment1 = sb_out.prepare(BUFF_SIZE);
   std::copy(buf_out1,
-            buf_out1 + 8,
+            buf_out1 + sizeof(buf_out1),
             boost::asio::buffers_begin(segment1));
-  sb_out.commit(2);
+  sb_out.commit(sizeof(buf_out1));
 
-  auto segment2 = sb_out.prepare(8);
+  auto segment2 = sb_out.prepare(BUFF_SIZE);
   std::copy(buf_out2,
-            buf_out2 + 8,
+            buf_out2 + sizeof(buf_out2),
             boost::asio::buffers_begin(segment2));
-  sb_out.commit(2);
+  sb_out.commit(sizeof(buf_out2));
 
-  auto segment3 = sb_out.prepare(8);
+  auto segment3 = sb_out.prepare(BUFF_SIZE);
   std::copy(buf_out3,
-            buf_out3 + 8,
+            buf_out3 + sizeof(buf_out3),
             boost::asio::buffers_begin(segment3));
-  sb_out.commit(2);
+  sb_out.commit(sizeof(buf_out3));
 
-  auto segment4 = sb_out.prepare(8);
+  auto segment4 = sb_out.prepare(BUFF_SIZE);
   std::copy(buf_out4,
-            buf_out4 + 8,
+            buf_out4 + sizeof(buf_out4),
             boost::asio::buffers_begin(segment4));
-  sb_out.commit(2);
+  sb_out.commit(sizeof(buf_out4));
 
   msg4r::print_bytes(std::cout,
                      boost::asio::buffers_begin(sb_out.data()),
