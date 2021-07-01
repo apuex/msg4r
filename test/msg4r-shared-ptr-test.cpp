@@ -23,7 +23,7 @@ std::ostream& operator<<(std::ostream& os, const animal_type& v) {
 
 class animal {
 public:
-  typedef std::shared_ptr<animal> animal_ptr;
+  typedef std::shared_ptr<animal> ptr;
   virtual ~animal() {}
   virtual void action() = 0;
 
@@ -34,6 +34,7 @@ protected:
 
 class cat: public animal {
 public:
+  typedef std::shared_ptr<cat> ptr;
   cat() : animal(animal_type::CAT), name_("tom") {}
   cat(const std::string& name) : animal(animal_type::CAT), name_(name) {}
   virtual ~cat() {}
@@ -43,6 +44,7 @@ public:
 
 class dog: public animal {
 public:
+  typedef std::shared_ptr<dog> ptr;
   dog() : animal(animal_type::DOG), name_("spike") {}
   dog(const std::string& name) : animal(animal_type::DOG), name_(name) {}
   virtual ~dog() {}
@@ -54,17 +56,17 @@ class animal_feeder {
 public:
   animal_feeder() {}
   virtual ~animal_feeder() {}
-  virtual void feed(animal::animal_ptr& ptr) = 0;
+  virtual void feed(animal::ptr& ptr) = 0;
 };
 
 class schrodinger_feeder: public animal_feeder {
 public:
   schrodinger_feeder() {}
   virtual ~schrodinger_feeder() {}
-  virtual void feed(animal::animal_ptr& ptr) {
+  virtual void feed(animal::ptr& ptr) {
     if(ptr) {
-      animal::animal_ptr dog_ptr = std::make_shared<dog>("schrodinger's cat");
-      animal::animal_ptr cat_ptr = std::make_shared<cat>("schrodinger's dog");
+      animal::ptr dog_ptr = std::make_shared<dog>("schrodinger's cat");
+      animal::ptr cat_ptr = std::make_shared<cat>("schrodinger's dog");
       switch (ptr->type_) {
         case animal_type::CAT:
           ptr.swap(dog_ptr);
@@ -80,10 +82,29 @@ public:
 };
 
 int main(int argc, char* argv[]) {
-  std::shared_ptr<animal> null_animal;
-  std::shared_ptr<animal> pussy_cat = std::make_shared<cat>("Thomas");
-  std::shared_ptr<animal> friendly_dog = std::make_shared<dog>("Fido");
-
+  animal::ptr null_animal;
+  animal::ptr pussy_cat = std::make_shared<cat>("Thomas");
+  animal::ptr friendly_dog = std::make_shared<dog>("Fido");
+  cat::ptr pcat;
+  dog::ptr pdog;
+  try {
+    pcat = std::dynamic_pointer_cast<cat>(pussy_cat);
+    pdog = std::dynamic_pointer_cast<dog>(pussy_cat);
+    if(pcat) {
+      std::cout << "std::dynamic_pointer_cast<cat>(pussy_cat) success." << std::endl;
+      pcat->action();
+    } else {
+      std::cout << "std::dynamic_pointer_cast<cat>(pussy_cat) failed." << std::endl;
+    }
+    if(pdog) {
+      std::cout << "std::dynamic_pointer_cast<dog>(pussy_cat) success." << std::endl;
+      pdog->action();
+    } else {
+      std::cout << "std::dynamic_pointer_cast<dog>(pussy_cat) failed." << std::endl;
+    }
+  } catch (...) {
+    std::cout << "std::dynamic_pointer_cast() error." << std::endl;
+  }
   std::cout << "[PLAY 1, Opening, synopsis..]" << std::endl;
   pussy_cat->action();
   friendly_dog->action();
