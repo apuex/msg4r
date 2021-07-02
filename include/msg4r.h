@@ -40,7 +40,7 @@ namespace msg4r {
 #define DECLARE_PARSER_FOR(value)                               \
 public:                                                         \
   typedef value value_type;                                     \
-  decode_state operator()(std::istream& is, value_type& v);     \
+  msg4r::decode_state operator()(std::istream& is, value_type& v);     \
   void reset();                                                 \
 private:                                                        \
   int state_;                                                   \
@@ -48,21 +48,21 @@ private:                                                        \
 #define DECLARE_DYNAMIC_PARSER_FOR(value, value_ptr_type)       \
 public:                                                         \
   typedef value value_type;                                     \
-  decode_state operator()(std::istream& is, value_type& v);     \
-  decode_state operator()(std::istream& is, value_ptr_type& v); \
+  msg4r::decode_state operator()(std::istream& is, value_type& v);     \
+  msg4r::decode_state operator()(std::istream& is, value_ptr_type& v); \
   void reset();                                                 \
 private:                                                        \
   int state_;                                                   \
 
 #define IMPLEMENT_PTR_PARSER(parser, value_ptr_type)                   \
-decode_state parser::operator()(std::istream& is, value_ptr_type& v) { \
+  msg4r::decode_state parser::operator()(std::istream& is, value_ptr_type& v) { \
   value_type& value = *dynamic_cast<value_type*>(v.get());             \
   return operator()(is, value);                                        \
 }                                                                      \
 
 #define BEGIN_IMPLEMENT_PARSER(parser)                                 \
-decode_state parser::operator()(std::istream& is, value_type& v) {     \
-  decode_state field_state;                                            \
+  msg4r::decode_state parser::operator()(std::istream& is, value_type& v) {     \
+  msg4r::decode_state field_state;                                            \
   switch (state_) {                                                    \
   case 0:                                                              \
 
@@ -70,7 +70,7 @@ decode_state parser::operator()(std::istream& is, value_type& v) {     \
   case __LINE__:                                     \
     state_ = __LINE__;                               \
     field_state = parser(stream, field);             \
-    if (decode_state::DECODE_SUCCESS != field_state) \
+    if (msg4r::decode_state::DECODE_SUCCESS != field_state) \
       return field_state;                            \
     state_ += 1;                                     \
 
@@ -84,7 +84,7 @@ decode_state parser::operator()(std::istream& is, value_type& v) {     \
   case __LINE__:                                     \
     state_ = __LINE__;                               \
     field_state = (*parser)(stream, field);          \
-    if (decode_state::DECODE_SUCCESS != field_state) \
+    if (msg4r::decode_state::DECODE_SUCCESS != field_state) \
       return field_state;                            \
     v = field;                                       \
     state_ += 1;                                     \
@@ -93,18 +93,18 @@ decode_state parser::operator()(std::istream& is, value_type& v) {     \
   case __LINE__:                                                      \
     state_ = __LINE__;                                                \
     field_state = parser(stream, field);                              \
-    if (decode_state::DECODE_SUCCESS != field_state)                  \
+    if (msg4r::decode_state::DECODE_SUCCESS != field_state)                  \
       return field_state;                                             \
     if (!validate_expr)                                               \
-      return decode_state::DECODE_FAILURE;                            \
+      return msg4r::decode_state::DECODE_FAILURE;                            \
     state_ += 1;                                                      \
 
 #define END_IMPLEMENT_PARSER()           \
   case __LINE__:                         \
     reset();                             \
-    return decode_state::DECODE_SUCCESS; \
+    return msg4r::decode_state::DECODE_SUCCESS; \
   default:                               \
-    return decode_state::DECODE_FAILURE; \
+    return msg4r::decode_state::DECODE_FAILURE; \
   }                                      \
 }                                        \
 
@@ -114,7 +114,7 @@ decode_state parser::operator()(std::istream& is, value_type& v) {     \
   case __LINE__: /* fall through*/    \
     {state = __LINE__;                \
     auto status = op(s, v);           \
-    if (decode_state::DECODE_SUCCESS != status) return status;} \
+    if (msg4r::decode_state::DECODE_SUCCESS != status) return status;} \
 
 #define PARSE_LIST_STATE(state, op, s, T, t_, add, length, index) \
   case __LINE__: /* fall through*/                 \
@@ -122,7 +122,7 @@ decode_state parser::operator()(std::istream& is, value_type& v) {     \
     for (; index != length;) {                     \
       T c;                                         \
       auto status = op(s, c);                      \
-      if (decode_state::DECODE_SUCCESS != status) return status; \
+      if (msg4r::decode_state::DECODE_SUCCESS != status) return status; \
       index += 1;                                  \
       t_.add(c);                                   \
     }                                              \
@@ -133,7 +133,7 @@ decode_state parser::operator()(std::istream& is, value_type& v) {     \
     v = t_;                              \
     reset();                             \
   }                                      \
-  return decode_state::DECODE_SUCCESS;   \
+  return msg4r::decode_state::DECODE_SUCCESS;   \
 
 
 enum class encode_state {
