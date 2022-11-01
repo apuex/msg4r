@@ -41,6 +41,7 @@
 dist
 dist-*
 vs
+.vs
 /build/
 .project
 .cproject

@@ -1,5 +1,8 @@
 #include <iostream>
+#include <string>
 #include <memory>
+
+using namespace std;
 
 enum class animal_type: uint8_t {
   CAT = 0,

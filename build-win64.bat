@@ -10,7 +10,7 @@ cmake -G "NMake Makefiles" ^
 -DCMAKE_MODULE_LINKER_FLAGS="/machine:amd64 /subsystem:console,5.02" ^
 -DCMAKE_STATIC_LINKER_FLAGS="/machine:amd64 /subsystem:console,5.02" ^
 -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreadedDLL ^
--DCMAKE_INSTALL_PREFIX=E:/usr64 ^
+-DCMAKE_INSTALL_PREFIX=C:/usr64 ^
 -DCMAKE_BUILD_TYPE=Release ^
 -DENABLE_TESTS=ON ^
 -DENABLE_VALGRIND=OFF ^
