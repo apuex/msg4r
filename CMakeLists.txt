@@ -1,4 +1,8 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
+cmake_policy(SET CMP0057 NEW)
+cmake_policy(SET CMP0065 NEW)
+cmake_policy(SET CMP0091 NEW) # Note: This property has effect only when policy CMP0091 is set to NEW prior to the first project() or enable_language() command that enables a language using a compiler targeting the MSVC ABI. 
+
 PROJECT(msg4r)
 
 EXECUTE_PROCESS( COMMAND uname -s COMMAND tr -d '\n' OUTPUT_VARIABLE OSNAME )
@@ -42,9 +46,6 @@ INCLUDE_DIRECTORIES(
 set(Boost_USE_STATIC_LIBS        ON) # only find static libs
 set(Boost_USE_MULTITHREADED      ON)
 set(Boost_USE_STATIC_RUNTIME    OFF)
-
-cmake_policy(SET CMP0057 NEW)
-cmake_policy(SET CMP0065 NEW)
 
 find_package(Threads REQUIRED)
 find_package(Boost 1.71.0 REQUIRED COMPONENTS date_time json serialization program_options log unit_test_framework)
