@@ -48,7 +48,7 @@ set(Boost_USE_MULTITHREADED      ON)
 set(Boost_USE_STATIC_RUNTIME    OFF)
 
 find_package(Threads REQUIRED)
-find_package(Boost 1.71.0 REQUIRED COMPONENTS date_time json serialization program_options log unit_test_framework)
+find_package(Boost 1.75.0 REQUIRED COMPONENTS date_time json serialization program_options log unit_test_framework)
 if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
   link_directories(${Boost_LIBRARY_DIRS})
