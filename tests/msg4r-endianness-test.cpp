@@ -32,7 +32,7 @@ typedef struct my_struct {
 std::ostream& operator<<(std::ostream& os,
                          const std::map<std::string, std::string>& t) {
   os << "map {\n";
-  std::for_each(t.begin(), t.end(), [&](auto e) { 
+  std::for_each(t.begin(), t.end(), [&](const std::pair<std::string, std::string>& e) { 
     os << "  " << e.first << " => " << e.second << ";" << std::endl;
     });
   os << "}";

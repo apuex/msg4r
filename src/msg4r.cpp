@@ -72,7 +72,7 @@ void string_parser::reset() {
 encode_state write(std::ostream& os, const std::string& v) {
   MSG4R_SIZE_T length = static_cast<MSG4R_SIZE_T>(v.length());
   write(os, length);
-  std::for_each(v.begin(), v.end(), [&](auto& e) {
+  std::for_each(v.begin(), v.end(), [&](const std::string::value_type& e) {
       write(os, e);
     });
   return encode_state::ENCODE_SUCCESS;

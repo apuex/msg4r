@@ -274,7 +274,7 @@ template<typename T>
 encode_state write(std::ostream& os, const std::vector<T>& v) {
   MSG4R_SIZE_T length = static_cast<MSG4R_SIZE_T>(v.size());
   write(os, length);
-  std::for_each(v.begin(), v.end(), [&](auto& e) {
+  std::for_each(v.begin(), v.end(), [&](const T& e) {
       write(os, e);
     });
   return encode_state::ENCODE_SUCCESS;
@@ -328,7 +328,7 @@ template<typename T>
 encode_state write(std::ostream& os, const std::list<T>& v) {
   MSG4R_SIZE_T length = static_cast<MSG4R_SIZE_T>(v.size());
   write(os, length);
-  std::for_each(v.begin(), v.end(), [&](auto& e) {
+  std::for_each(v.begin(), v.end(), [&](const T& e) {
       write(os, e);
     });
   return encode_state::ENCODE_SUCCESS;
@@ -381,7 +381,7 @@ template<typename T>
 encode_state write(std::ostream& os, const std::set<T>& v) {
   MSG4R_SIZE_T length = static_cast<MSG4R_SIZE_T>(v.size());
   write(os, length);
-  std::for_each(v.begin(), v.end(), [&](auto& e) {
+  std::for_each(v.begin(), v.end(), [&](const T& e) {
       write(os, e);
     });
   return encode_state::ENCODE_SUCCESS;
@@ -484,7 +484,7 @@ template<typename K, typename V>
 encode_state write(std::ostream& os, const std::map<K, V>& v) {
   MSG4R_SIZE_T length = static_cast<MSG4R_SIZE_T>(v.size());
   write(os, length);
-  std::for_each(v.begin(), v.end(), [&](auto& e) {
+  std::for_each(v.begin(), v.end(), [&](const std::pair<K, V>& e) {
       write(os, e.first);
       write(os, e.second);
     });
@@ -551,9 +551,9 @@ std::ostream& operator<<(std::ostream& os,
 }
 
 template<typename T>
-void print_bytes(std::ostream& os, T& str) {
+void print_bytes(std::ostream& os, const T& str) {
   os << "[ ";
-  std::for_each(str.begin(), str.end(), [&](auto& e) {
+  std::for_each(str.begin(), str.end(), [&](const typename T::value_type& e) {
     os << std::hex << std::uppercase << std::setw(2) << std::setfill('0')
        << (static_cast<uint32_t>(e) & 0xff) << " ";
   });
@@ -564,7 +564,7 @@ void print_bytes(std::ostream& os, const char* buff, const size_t length);
 template <typename Iterator>
 void print_bytes(std::ostream& os, const Iterator begin, const Iterator end) {
   os << "[ ";
-  std::for_each(begin, end, [&](auto& e) {
+  std::for_each(begin, end, [&](const char& e) {
     os << std::hex << std::uppercase << std::setw(2) << std::setfill('0')
        << (static_cast<uint32_t>(e) & 0xff) << " ";
   });

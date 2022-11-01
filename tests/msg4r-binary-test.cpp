@@ -34,7 +34,7 @@ typedef struct my_struct {
 std::ostream& operator<<(std::ostream& os,
                          const std::map<std::string, std::string>& t) {
   os << "{";
-  std::for_each(t.begin(), t.end(), [&](auto e) { 
+  std::for_each(t.begin(), t.end(), [&](const std::pair<std::string, std::string>& e) { 
     os << e.first << ": " << e.second << ";" << std::endl;
     });
   os << "}";
@@ -62,7 +62,7 @@ void serialize(
     Archive& ar,
     std::map<std::string, std::string>& t,
   const unsigned int version) {
-  std::for_each(t.begin(), t.end(), [&](auto e) {
+  std::for_each(t.begin(), t.end(), [&](const std::pair<std::string, std::string>& e) {
     ar& BOOST_SERIALIZATION_NVP(e.first);
     ar& BOOST_SERIALIZATION_NVP(e.second);
   });

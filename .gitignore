@@ -39,6 +39,7 @@
 
 # build directories
 dist
+dist-*
 vs
 /build/
 .project
