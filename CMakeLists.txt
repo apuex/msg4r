@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.10.3)
 cmake_policy(SET CMP0057 NEW)
 cmake_policy(SET CMP0065 NEW)
 cmake_policy(SET CMP0091 NEW) # Note: This property has effect only when policy CMP0091 is set to NEW prior to the first project() or enable_language() command that enables a language using a compiler targeting the MSVC ABI. 
