@@ -4,7 +4,7 @@ namespace msg4r {
 
 template<> decode_state number_parser<float32_t>::operator()(std::istream& is, float32_t& v) {
   if(is.eof()) return decode_state::DECODE_INPROGRESS;
-  is.read((char*)&t_ + index_, sizeof(float32_t));
+  is.read((char*)&t_ + index_, sizeof(float32_t) - index_);
   auto count = is.gcount();
   if(0 == count) return decode_state::DECODE_INPROGRESS;
   index_ += count;
@@ -20,7 +20,7 @@ template<> decode_state number_parser<float32_t>::operator()(std::istream& is, f
 
 template<> decode_state number_parser<float64_t>::operator()(std::istream& is, float64_t& v) {
   if(is.eof()) return decode_state::DECODE_INPROGRESS;
-  is.read((char*)&t_ + index_, sizeof(float64_t));
+  is.read((char*)&t_ + index_, sizeof(float64_t) - index_);
   auto count = is.gcount();
   if(0 == count) return decode_state::DECODE_INPROGRESS;
   index_ += count;
@@ -67,6 +67,7 @@ void string_parser::reset() {
   t_.clear();  // reset to initial state
   length_parser_.reset();
   t_parser.reset();
+  /* std::cout << "void string_parser::reset()" << std::endl; */
 }
 
 encode_state write(std::ostream& os, const std::string& v) {

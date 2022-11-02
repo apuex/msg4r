@@ -397,7 +397,7 @@ BOOST_AUTO_TEST_CASE(si_data_point_test) {
   std::istream::pos_type pos = ssm.tellg();
   // get length
   ssm.seekg(0, ssm.end);
-  BOOST_TEST(ssm.tellg() == static_cast<std::istream::pos_type>(15));
+  BOOST_TEST(ssm.tellg() == static_cast<std::istream::pos_type>(16));
   ssm.seekg(pos);
 
   std::string str = ssm.str();

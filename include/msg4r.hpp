@@ -70,6 +70,7 @@ private:                                                        \
   case __LINE__:                                     \
     state_ = __LINE__;                               \
     field_state = parser(stream, field);             \
+    /* std::cout << __FILE__ << "(" << std::dec <<  __LINE__ << "): PARSE_FIELD field_state = " << field_state << std::endl; */ \
     if (msg4r::decode_state::DECODE_SUCCESS != field_state) \
       return field_state;                            \
     state_ += 1;                                     \
@@ -114,6 +115,7 @@ private:                                                        \
   case __LINE__: /* fall through*/    \
     {state = __LINE__;                \
     auto status = op(s, v);           \
+    /* std::cout << __FILE__ << "(" << std::dec <<  __LINE__ << "): PARSE_STATE status = " << status << std::endl; */ \
     if (msg4r::decode_state::DECODE_SUCCESS != status) return status;} \
 
 #define PARSE_LIST_STATE(state, op, s, T, t_, add, length, index) \
@@ -122,6 +124,7 @@ private:                                                        \
     for (; index != length;) {                     \
       T c;                                         \
       auto status = op(s, c);                      \
+      /* std::cout << __FILE__ << "(" << std::dec <<  __LINE__ << "): PARSE_LIST_STATE status = " << status << std::endl; */ \
       if (msg4r::decode_state::DECODE_SUCCESS != status) return status; \
       index += 1;                                  \
       t_.add(c);                                   \
@@ -172,8 +175,14 @@ template<> decode_state number_parser<float64_t>::operator()(std::istream& is, f
 template<typename T>
 decode_state number_parser<T>::operator()(std::istream& is, T& v) {
   if(is.eof()) return decode_state::DECODE_INPROGRESS;
-  is.read((char*)&t_ + index_, sizeof(T));
+  is.read((char*)&t_ + index_, sizeof(T) - index_);
   auto count = is.gcount();
+  /*
+  std::cout << __FILE__ << "(" << std::dec <<  __LINE__ << "): sizeof(T) = " << sizeof(T)
+     << ", index = " << index_
+     << ", count = " << count
+     << std::endl;
+  */
   if(0 == count) return decode_state::DECODE_INPROGRESS;
   index_ += count;
   if(index_ != sizeof(T)) {

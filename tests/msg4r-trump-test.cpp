@@ -117,7 +117,7 @@ BOOST_AUTO_TEST_CASE(struct1_test) {
   std::istream::pos_type pos = ssm.tellg();
   // get length
   ssm.seekg(0, ssm.end);
-  BOOST_TEST(ssm.tellg() == static_cast<std::istream::pos_type>(63));
+  BOOST_TEST(ssm.tellg() == static_cast<std::istream::pos_type>(70));
   ssm.seekg(pos);
   
   std::string str = ssm.str();
@@ -128,7 +128,7 @@ BOOST_AUTO_TEST_CASE(struct1_test) {
   std::string str1 = str.substr(0, 13);
   std::string str2 = str.substr(13, 17);
   std::string str3 = str.substr(30, 17);
-  std::string str4 = str.substr(47, 16);
+  std::string str4 = str.substr(47, 23);
  
   std::cout << "segment 1:" << std::endl; 
   msg4r::print_bytes(std::cout, str1);

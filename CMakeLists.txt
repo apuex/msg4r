@@ -23,7 +23,7 @@ if(MSVC)
 endif()
 
 ADD_DEFINITIONS(-DMSG4R_BIG_ENDIAN)
-ADD_DEFINITIONS(-DMSG4R_SIZE_T=uint8_t)
+ADD_DEFINITIONS(-DMSG4R_SIZE_T=uint16_t)
 
 INCLUDE_DIRECTORIES(
   app
@@ -63,19 +63,10 @@ ADD_LIBRARY(msg4r STATIC ${MSG4R_SRCS})
 target_compile_definitions(msg4r PUBLIC _MSG4R_)
 set_target_properties(msg4r PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
 
-if (ENABLE_VALGRIND)
-  find_program(MEMORYCHECK_COMMAND valgrind)
-  if ("${MEMORYCHECK_COMMAND}" MATCHES "MEMORYCHECK_COMMAND-NOTFOUND")
-    message(WARNING "Valgrind couldn't be found.")
-    unset(MEMORYCHECK_COMMAND)
-  else()
-    set(MEMORYCHECK_COMMAND_OPTIONS --trace-children=yes --leak-check=full --error-exitcode=1 --suppressions=${CMAKE_CURRENT_SOURCE_DIR}/valgrind.supp)
-  endif()
-endif()
-
 if(ENABLE_TESTS)
   include(CTest)
   enable_testing()
+
   set(unit_tests
     msg4r-binary-test
     msg4r-compiler-test
@@ -84,6 +75,7 @@ if(ENABLE_TESTS)
     msg4r-inheritance-test
     msg4r-int-test
     msg4r-istream-test
+    msg4r-json-test
     msg4r-list-test
     msg4r-map-test
     msg4r-number-parser-test
@@ -100,11 +92,21 @@ if(ENABLE_TESTS)
     msg4r-trump-test
     msg4r-vector-test
   )
-  if("${Boost_VERSION}" VERSION_GREATER_EQUAL "1.71.0")
-    list(APPEND unit_tests
-      msg4r-json-test
-    )
-  endif()
+
+  if(ENABLE_VALGRIND)
+    find_program(MEMORYCHECK_COMMAND valgrind)
+    if("${MEMORYCHECK_COMMAND}" MATCHES "MEMORYCHECK_COMMAND-NOTFOUND")
+      message(WARNING "Valgrind couldn't be found.")
+      unset(MEMORYCHECK_COMMAND)
+    else()
+      set(MEMORYCHECK_COMMAND_OPTIONS
+        --trace-children=yes
+       	--leak-check=full
+       	--error-exitcode=1
+       	--suppressions=${CMAKE_CURRENT_SOURCE_DIR}/valgrind.supp
+      )
+    endif()
+  endif(ENABLE_VALGRIND)
 
 foreach(unit_test ${unit_tests})
   add_executable("${unit_test}" "tests/${unit_test}.cpp")
@@ -112,15 +114,26 @@ foreach(unit_test ${unit_tests})
   target_link_libraries(${unit_test} msg4r ${Boost_LIBRARIES} ${Boost_unit_test_framework})
   if(UNIX)
     set_target_properties("${unit_test}" PROPERTIES LINK_FLAGS_RELEASE -s)
-  else()
-  endif()
-  if(MEMORYCHECK_COMMAND)
+  else(UNIX)
+  endif(UNIX)
+  
+  if(ENABLE_VALGRIND)
+    if(MEMORYCHECK_COMMAND)
+      add_test(NAME "${unit_test}"
+        COMMAND "${MEMORYCHECK_COMMAND}"
+       	        "${MEMORYCHECK_COMMAND_OPTIONS}"
+                "${CMAKE_CURRENT_BINARY_DIR}/${unit_test}"
+      )
+    else(MEMORYCHECK_COMMAND)
+      add_test(NAME "${unit_test}"
+        COMMAND "./${unit_test}"
+      )
+    endif(MEMORYCHECK_COMMAND)
+  else(ENABLE_VALGRIND)
     add_test(NAME "${unit_test}"
-      COMMAND "${MEMORYCHECK_COMMAND}" ${MEMORYCHECK_COMMAND_OPTIONS} "${CMAKE_CURRENT_BINARY_DIR}/${unit_test}")
-  else()
-    add_test(NAME "${unit_test}"
-      COMMAND "./${unit_test}")
-  endif()
+      COMMAND "./${unit_test}"
+    )
+  endif(ENABLE_VALGRIND)
 endforeach()
 
 endif(ENABLE_TESTS)

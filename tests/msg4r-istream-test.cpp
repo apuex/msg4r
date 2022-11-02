@@ -100,7 +100,7 @@ BOOST_AUTO_TEST_CASE(istream5_test) {
   std::string s1 = "01234567";
   std::string s2;
   char buff[16];
-  char expect[16] = {0x08, '0', '1', '2', '3', '4', '5', '6', '7'};
+  char expect[16] = {0x00, 0x08, '0', '1', '2', '3', '4', '5', '6', '7'};
   std::stringstream ssm;
   std::istream::pos_type pos;
 
