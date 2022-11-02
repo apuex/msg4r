@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE Struct1 Test
 #include <boost/test/included/unit_test.hpp>
 
-#include <msg4r.h>
+#include <msg4r.hpp>
 #include <sstream>
 
 namespace msg4r {

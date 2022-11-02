@@ -4,7 +4,7 @@
 #endif
 #include <boost/test/included/unit_test.hpp>
 
-#include <msg4r.h>
+#include <msg4r.hpp>
 #include <boost/asio.hpp>
 #include <boost/asio/buffer.hpp>
 #include <boost/asio/streambuf.hpp>

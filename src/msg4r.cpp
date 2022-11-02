@@ -1,4 +1,4 @@
-#include <msg4r.h>
+#include <msg4r.hpp>
 
 namespace msg4r {
 

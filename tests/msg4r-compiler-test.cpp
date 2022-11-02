@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <msg4r.h>
+#include <msg4r.hpp>
 #ifdef _WIN32
 #include <windows.h>
 #endif

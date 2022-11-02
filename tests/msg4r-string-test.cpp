@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE String Test
 #include <boost/test/included/unit_test.hpp>
 
-#include <msg4r.h>
+#include <msg4r.hpp>
 #include <sstream>
 
 BOOST_AUTO_TEST_CASE(string_test) {

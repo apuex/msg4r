@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE Number Parser Test
 #include <boost/test/included/unit_test.hpp>
 
-#include <msg4r.h>
+#include <msg4r.hpp>
 #include <sstream>
 
 BOOST_AUTO_TEST_CASE(uint8_t_test) {
