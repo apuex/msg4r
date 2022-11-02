@@ -10,7 +10,7 @@ which has resource constraints. We need tools for Rapid Construction of simple p
 - Most libraries for deserialization/parsing is implemented in stateless, synchronized style IO mode, 
 which means bad scalability for large number of concurrent connections when no coroutine support;
 besides, there're no coroutine support in the legacy C++ environments.
-We need tools for simplifing of creating stateful, asynchronized style deserializers/parsers.
+We need tools for simplifying of creating stateful, asynchronized style deserializers/parsers.
  
 ## Architecture
 
