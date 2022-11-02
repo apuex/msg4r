@@ -55,7 +55,7 @@ if(Boost_FOUND)
 endif()
 
 SET(MSG4R_SRCS
-  include/msg4r.h
+  include/msg4r.hpp
   src/msg4r.cpp
 )
 
@@ -142,7 +142,7 @@ INSTALL(TARGETS
   ARCHIVE DESTINATION lib)
 
 INSTALL(FILES 
-  include/msg4r.h
+  include/msg4r.hpp
   DESTINATION include
   CONFIGURATIONS Release)
     
