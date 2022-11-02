@@ -45,7 +45,7 @@ C:\boost_1_80_0> b2 install --prefix=C:\usr64 --build-dir=C:\usr64\build-boost -
 
 clone this project to `msg4r`;
 ```
-C:\github\apuex> git clone https://gitee.com/apuex/msg4r
+C:\github\apuex> git clone https://github.com/apuex/msg4r
 C:\github\apuex> cd msg4r 
 C:\github\apuex\msg4r> mkdir dist-win64
 C:\github\apuex\msg4r> cd dist-win64
